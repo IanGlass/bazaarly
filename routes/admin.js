@@ -7,7 +7,8 @@ const rootDir = require('../helpers/path');
 const products = [];
 
 router.get('/add-product', (req, res, next) => {
-  res.render('add-product', {pageTitle: 'Add Product'});
+  // Pass in the path which determines which header is currently active in main-layout.pug
+  res.render('add-product', {pageTitle: 'Add Product', path: req.path});
 });
 
 router.post('/add-product', (req, res, next) => {

@@ -23,7 +23,7 @@ app.use(shopRoutes);
 
 // Catch any path not routed to a middleware and sever a 404 page
 app.use((req, res, next) => {
-    res.status(404).render('404');
+    res.status(404).render('404', {pageTitle: 'Page Not Found'});
 })
 
 app.listen(3000);

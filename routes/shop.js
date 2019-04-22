@@ -8,7 +8,8 @@ const router = express.Router();
 
 router.get('/', (req, res, next) => {
   const products = adminData.products;
-  res.render('shop', {prods: products});
+  // Pass in the path which determines which header is currently active in main-layout.pug
+  res.render('shop', {prods: products, pageTitle: 'Shop', path: req.path });
 });
 
 module.exports = router;
