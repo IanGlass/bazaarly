@@ -1,9 +1,9 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
-const pug = require('pug');
-
 const app = express();
+
+const errorCont = require('./controllers/errorCont');
 
 // Tell express to use pug template engine
 app.set('view engine', 'ejs');
@@ -21,9 +21,7 @@ app.use(express.static(path.join(__dirname, 'public/')));
 app.use('/admin', adminData.routes);
 app.use(shopRoutes);
 
-// Catch any path not routed to a middleware and sever a 404 page
-app.use((req, res, next) => {
-    res.status(404).render('404', {pageTitle: 'Page Not Found'});
-})
+// Catch any path not routed to a middleware and serve a 404 page
+app.use(errorCont.error404);
 
 app.listen(3000);
