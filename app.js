@@ -6,7 +6,7 @@ const pug = require('pug');
 const app = express();
 
 // Tell express to use pug template engine
-app.set('view engine', 'pug');
+app.set('view engine', 'ejs');
 app.set('views', 'views');
 
 const adminData = require('./routes/admin');
