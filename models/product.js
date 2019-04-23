@@ -1,5 +1,15 @@
 const fs = require('fs');
-const path = require('path')
+const path = require('path');
+
+const getProductsFromFile = cb => {
+    fs.readFile(p, (error, fileContent) => {
+        // If there is an error, prevent server from breaking
+        if (error) {
+            return cb([]);
+        }
+        cb(JSON.parse(fileContent));
+    })
+};
 
 const p = path.join(
     path.dirname(process.mainModule.filename), 
@@ -8,32 +18,30 @@ const p = path.join(
 );
 
 module.exports = class Product {
-    constructor(title) {
+    constructor(title, imageUrl, description, price) {
         this.title = title;
+        this.imageUrl = imageUrl;
+        this.description = description;
+        this.price = price;
     }
 
     save() {
-        fs.readFile(p, (error, fileContent) => {
-            let products = [];
-            if (!error) {
-                products = JSON.parse(fileContent);
-            }
-            products.push({title: this.title});
+        getProductsFromFile(products => {
+            products.push({
+                title: this.title, 
+                imageUrl: this.imageUrl,
+                price: this.price,
+                description: this.description,
+            });
             fs.writeFile(p, JSON.stringify(products), (error) => {
                 if (error) {
                     console.log(error);
                 }
             });
-        });
+        })
     }
 
     static fetchAll(cb) {
-        fs.readFile(p, (error, fileContent) => {
-            // If there is an error, prevent server from breaking
-            if (error) {
-                cb([]);
-            }
-            cb(JSON.parse(fileContent));
-        })
+        getProductsFromFile(cb);
     }
 }
