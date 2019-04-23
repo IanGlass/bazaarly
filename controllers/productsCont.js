@@ -6,7 +6,6 @@ exports.getAddProduct = (req, res, next) => {
 }
 
 exports.postAddProduct = (req, res, next) => {
-    console.log(req.body);
     const product = new Product(req.body.title);
     product.save();
     // products.push({title: req.body.title, docTitle: 'Shop'});
@@ -14,10 +13,12 @@ exports.postAddProduct = (req, res, next) => {
 }
 
 exports.getProducts = (req, res, next) => {
-    const products = Product.fetchAll();
-    // Pass in the path which determines which header is currently active in main-layout.pug
-    res.render('shop', {
-      prods: products, 
-      pageTitle: 'Shop', 
-      path: req.path });
+    Product.fetchAll((products) => {
+        // Pass in the path which determines which header is currently active in main-layout.pug
+        res.render('shop', {
+        prods: products, 
+        pageTitle: 'Shop', 
+        path: req.path
+      });
+    });
 }
