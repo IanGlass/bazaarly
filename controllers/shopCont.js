@@ -11,6 +11,16 @@ exports.getProducts = (req, res, next) => {
     });
 }
 
+exports.getProduct = (req, res, next) => {
+    Product.getById (req.params.productId, (product) => {
+        res.render('shop/product-details', {
+            pageTitle: 'Product Details', 
+            path: req.originalUrl,
+            product: product
+        });
+    })
+}
+
 exports.getIndex = (req, res, next) => {
     Product.fetchAll((products) => {
         // Pass in the path which determines which header is currently active in main-layout.pug
