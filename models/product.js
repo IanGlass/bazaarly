@@ -35,18 +35,14 @@ module.exports = class Product {
                 // Update the found product with all the new product details
                 updatedProducts[existingProductIndex] = this;
                 fs.writeFile(p, JSON.stringify(updatedProducts), (error) => {
-                    if (error) {
-                        console.log(error);
-                    }
+                    console.log(error);
                 });
             }
             else {
                 this.id = Math.random().toString();
                 products.push(this);
                 fs.writeFile(p, JSON.stringify(products), (error) => {
-                    if (error) {
-                        console.log(error);
-                    }
+                    console.log(error);
                 });
             }
         })
@@ -56,10 +52,20 @@ module.exports = class Product {
         getProductsFromFile(cb);
     }
 
-    static getById (id, cb) {
-        getProductsFromFile (products => {
+    static getByID (id, cb) {
+        getProductsFromFile(products => {
             const product = products.find(product => product.id === id);
             cb(product);
-        })
+        });
+    }
+
+    static deleteByID (id, cb) {
+        getProductsFromFile(products => {
+            products = products.filter(product => product.id !== id);
+            fs.writeFile(p, JSON.stringify(products), (error) => {
+                console.log(error);
+                cb();
+            });
+        });
     }
 }

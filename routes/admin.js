@@ -15,5 +15,6 @@ router.get('/edit-product/:productID', adminCont.getEditProduct);
 
 // Product id to edit is enclosed in the request body
 router.post('/edit-product', adminCont.postEditProduct);
+router.post('/delete-product', adminCont.postDeleteProduct);
 
 exports.routes = router;

@@ -21,12 +21,10 @@ exports.getEditProduct = (req, res, next) => {
 
     const prodID = req.params.productID;
 
-    Product.getById(prodID, product => {
+    Product.getByID(prodID, product => {
         if (!product) {
             return res.redirect('/');
         }
-
-        console.log(product);
 
         res.render('admin/edit-product', {
             pageTitle: 'Edit Product',
@@ -44,6 +42,12 @@ exports.postEditProduct = (req, res, next) => {
 
     res.redirect('/admin/products');
 
+}
+
+exports.postDeleteProduct = (req, res, next) => {
+    Product.deleteByID(req.body.productID, () => {
+        res.redirect('/admin/products')
+    });
 }
 
 exports.getProducts = (req, res, next) => {
