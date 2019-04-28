@@ -4,12 +4,13 @@ exports.getAddProduct = (req, res, next) => {
     // Pass in the path which determines which header is currently active in main-layout.pug
     res.render('admin/edit-product', {
         pageTitle: 'Add Product',
-        path: req.originalUrl
+        path: req.originalUrl,
+        editMode: false
     });
 }
 
 exports.postAddProduct = (req, res, next) => {
-    const product = new Product(req.body.title, req.body.imageUrl, req.body.description, req.body.price);
+    const product = new Product(null, req.body.title, req.body.imageUrl, req.body.description, req.body.price);
     product.save();
     // products.push({title: req.body.title, docTitle: 'Shop'});
     res.redirect('/');
@@ -18,11 +19,31 @@ exports.postAddProduct = (req, res, next) => {
 // add-product and edit-product share the same view
 exports.getEditProduct = (req, res, next) => {
 
-    res.render('admin/edit-product', {
-        pageTitle: 'Edit Product',
-        path: req.originalUrl,
-        editing: true
+    const prodID = req.params.productID;
+
+    Product.getById(prodID, product => {
+        if (!product) {
+            return res.redirect('/');
+        }
+
+        console.log(product);
+
+        res.render('admin/edit-product', {
+            pageTitle: 'Edit Product',
+            path: req.originalUrl,
+            editMode: true,
+            product: product
+        });
     });
+}
+
+exports.postEditProduct = (req, res, next) => {
+    const updatedProduct = new Product(req.body.productID, req.body.title, req.body.imageUrl, req.body.description, req.body.price);
+
+    updatedProduct.save();
+
+    res.redirect('/admin/products');
+
 }
 
 exports.getProducts = (req, res, next) => {
