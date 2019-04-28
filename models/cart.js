@@ -52,13 +52,28 @@ module.exports = class Cart {
             if (error) {
                 return
             }
-            cart = JSON.parse(fileContent);
-            const updatedCart = {...cart};
+
+            const updatedCart = {...JSON.parse(fileContent)};
 
             const product = updatedCart.products.find(product => product.id === id);
 
+            updatedCart.products = updatedCart.products.filter(product => product.id !== id);
+            updatedCart.totalPrice = updatedCart.totalPrice - (price * product.qty);
 
-            cart.totalPrice = cart.totalPrice - (price * product.qty);
+            fs.writeFile(p, JSON.stringify(updatedCart), (error) => {
+                console.log(error);
+            });
         });
+    }
+
+    static getCart(cb) {
+        fs.readFile(p, (error, fileContent) => {
+            if (error) {
+                cb(null);
+            }
+            else {
+                cb(JSON.parse(fileContent));
+            }
+        })
     }
 }

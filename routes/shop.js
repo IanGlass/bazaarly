@@ -13,6 +13,8 @@ router.get('/cart', shopCont.getCart);
 // Add a product to the cart
 router.post('/cart', shopCont.postCart);
 
+router.post('/cart-delete-item', shopCont.postCartDeleteProduct);
+
 router.get('/checkout', shopCont.getCheckout);
 
 router.get('/orders', shopCont.getOrders);

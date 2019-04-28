@@ -34,23 +34,39 @@ exports.getIndex = (req, res, next) => {
 };
 
 exports.getCart = (req, res, next) => {
-    res.render('shop/cart', {
-        pageTitle: 'Cart', 
-        path: req.originalUrl
+    Cart.getCart(cart => {
+        Product.fetchAll(products => {
+            const cartProducts = [];
+            for (product of products) {
+                const cartProductData = cart.products.find(prod => prod.id === product.id);
+                if (cartProductData) {
+                    cartProducts.push({
+                        productData: product,
+                        qty: cartProductData.qty
+                    });
+                }
+            }
+            res.render('shop/cart', {
+                pageTitle: 'Your Cart', 
+                path: req.originalUrl,
+                cartProducts: cartProducts
+            });
+        })
     })
 }
 
 exports.postCart = (req, res, next) => {
-    const prodID = req.body.productID;
-    Product.getByID(prodID, (product) => {
-        Cart.addProduct(prodID, product.price);
+    Product.getByID(req.body.productID, (product) => {
+        Cart.addProduct(req.body.productID, product.price);
     });
     res.redirect('/');
-    console.log('got to postCart')
-    // res.render('shop/cart', {
-    //     pageTitle: 'Cart', 
-    //     path: req.originalUrl
-    // })
+}
+
+exports.postCartDeleteProduct = (req, res, next) => {
+    Product.getByID(req.body.productID, (product) => {
+        Cart.deleteProduct(req.body.productID, product.price);
+        res.redirect('/cart');
+    });
 }
 
 exports.getCheckout = (req, res, next) => {

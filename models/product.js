@@ -1,6 +1,8 @@
 const fs = require('fs');
 const path = require('path');
 
+const Cart = require('./cart');
+
 const getProductsFromFile = cb => {
     fs.readFile(p, (error, fileContent) => {
         // If there is an error, prevent server from breaking
@@ -61,10 +63,13 @@ module.exports = class Product {
 
     static deleteByID (id, cb) {
         getProductsFromFile(products => {
+            const product = products.find(product => product.id ===id);
             products = products.filter(product => product.id !== id);
             fs.writeFile(p, JSON.stringify(products), (error) => {
-                console.log(error);
-                cb();
+                if (!error) {
+                    Cart.deleteProduct(id, product.price);
+                    cb();
+                }
             });
         });
     }
