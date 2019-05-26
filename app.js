@@ -5,7 +5,7 @@ const app = express();
 
 const errorCont = require('./controllers/errorCont');
 
-// Tell express to use pug template engine
+// Tell express to use ejs template engine
 app.set('view engine', 'ejs');
 app.set('views', 'views');
 
@@ -21,7 +21,7 @@ app.use(express.static(path.join(__dirname, 'public/')));
 app.use('/admin', adminData.routes);
 app.use(shopRoutes);
 
-// Catch any path not routed to a middleware and serve a 404 page
+// Catch any path not routed to a middleware and serve a 404 page, THIS INVOCATION OF app.use MUST COME LAST
 app.use(errorCont.error404);
 
 app.listen(3000);

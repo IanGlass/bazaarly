@@ -19,9 +19,9 @@ exports.postAddProduct = (req, res, next) => {
 // add-product and edit-product share the same view
 exports.getEditProduct = (req, res, next) => {
 
-    const prodID = req.params.productID;
+    const prodId = req.params.productID;
 
-    Product.getByID(prodID, product => {
+    Product.getByID(prodId, product => {
         if (!product) {
             return res.redirect('/');
         }

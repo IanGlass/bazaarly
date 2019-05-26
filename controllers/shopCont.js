@@ -13,7 +13,7 @@ exports.getProducts = (req, res, next) => {
 }
 
 exports.getProduct = (req, res, next) => {
-    Product.getByID(req.params.productId, (product) => {
+    Product.getByID(req.params.productID, (product) => {
         res.render('shop/product-details', {
             pageTitle: 'Product Details', 
             path: req.originalUrl,
