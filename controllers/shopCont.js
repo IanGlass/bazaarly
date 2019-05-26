@@ -1,36 +1,42 @@
-const Product = require('../models/product');
+const Product = require('../models/Product')
 const Cart = require('../models/cart');
 
 exports.getProducts = (req, res, next) => {
-    Product.fetchAll((products) => {
-        // Pass in the path which determines which header is currently active in main-layout.pug
-        res.render('shop/products', {
-            pageTitle: 'Shop', 
-            path: req.originalUrl,
-            prods: products
-        });
-    });
+    Product.findAll()
+        .then((products) => {
+            // Pass in the path which determines which header is currently active in main-layout.pug
+            res.render('shop/products', {
+                pageTitle: 'Shop', 
+                path: req.originalUrl,
+                prods: products
+            });
+        })
+        .catch((error) => console.log(error))
 }
 
 exports.getProduct = (req, res, next) => {
-    Product.getByID(req.params.productID, (product) => {
-        res.render('shop/product-details', {
-            pageTitle: 'Product Details', 
-            path: req.originalUrl,
-            product: product
-        });
-    })
+    Product.findByPk(req.params.productID)
+        .then((product) => {
+            res.render('shop/product-details', {
+                pageTitle: 'Product Details', 
+                path: req.originalUrl,
+                product: product
+            });
+        })
+        .catch((error) => console.log(error))
 }
 
 exports.getIndex = (req, res, next) => {
-    Product.fetchAll((products) => {
-        // Pass in the path which determines which header is currently active in main-layout.pug
-        res.render('shop/index', {
-        pageTitle: 'Shop', 
-        path: req.originalUrl,
-        prods: products
-      });
-    });
+    Product.findAll()
+        .then((products) => {
+            // Pass in the path which determines which header is currently active
+            res.render('shop/index', {
+                pageTitle: 'Shop', 
+                path: req.originalUrl,
+                prods: products
+            });
+        })
+        .catch((error) => console.log(error))
 };
 
 exports.getCart = (req, res, next) => {

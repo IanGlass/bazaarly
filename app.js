@@ -4,6 +4,7 @@ const path = require('path');
 const app = express();
 
 const errorCont = require('./controllers/errorCont');
+const sequelize = require('./helpers/database');
 
 // Tell express to use ejs template engine
 app.set('view engine', 'ejs');
@@ -24,4 +25,12 @@ app.use(shopRoutes);
 // Catch any path not routed to a middleware and serve a 404 page, THIS INVOCATION OF app.use MUST COME LAST
 app.use(errorCont.error404);
 
-app.listen(3000);
+// Instantiate dbs if they don't already exist
+sequelize.sync()
+    .then(() => {
+        app.listen(3000);
+    })
+    .catch((error) => {
+        console.log(error);
+    });
+
