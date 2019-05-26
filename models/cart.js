@@ -50,12 +50,17 @@ module.exports = class Cart {
         fs.readFile(p, (error, fileContent) => {
             // No cart, nothing to delete!
             if (error) {
-                return
+                return;
             }
 
             const updatedCart = {...JSON.parse(fileContent)};
 
             const product = updatedCart.products.find(product => product.id === id);
+
+            // We don't have that product in the cart
+            if (!product) {
+                return;
+            }
 
             updatedCart.products = updatedCart.products.filter(product => product.id !== id);
             updatedCart.totalPrice = updatedCart.totalPrice - (price * product.qty);
