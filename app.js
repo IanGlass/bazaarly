@@ -9,6 +9,8 @@ const User = require('./models/user');
 const Product = require('./models/product');
 const Cart = require('./models/cart');
 const CartItem = require('./models/cart-item');
+const Order = require('./models/order');
+const OrderItem = require('./models/order-item');
 
 
 // Tell express to use ejs template engine
@@ -39,13 +41,24 @@ app.use(shopRoutes);
 // Catch any path not routed to a middleware and serve a 404 page, THIS INVOCATION OF app.use MUST COME LAST
 app.use(errorCont.error404);
 
-// Relate the product model to the user model, show add foreign key but isn't working
+// Relate the product model to the user model, should add foreign key but isn't working
 User.hasMany(Product);
-Product.belongsTo(User, { constraints: true, onDelete: 'CASCADE' });
+Product.belongsTo(User, {
+  constraints: true, onDelete: 'CASCADE' 
+});
 User.hasOne(Cart);
 Cart.belongsTo(User);
-Cart.belongsToMany(Product, { through: CartItem });
-Product.belongsToMany(Cart, { through: CartItem });
+Cart.belongsToMany(Product, {
+  through: CartItem 
+});
+Product.belongsToMany(Cart, {
+  through: CartItem
+});
+Order.belongsTo(User);
+User.hasMany(Order);
+Order.belongsToMany(Product, {
+  through: OrderItem
+})
 
 // Instantiate dbs if they don't already exist
 sequelize

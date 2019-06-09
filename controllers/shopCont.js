@@ -1,5 +1,4 @@
 const Product = require('../models/Product')
-const Cart = require('../models/cart');
 
 exports.getProducts = (req, res, next) => {
   Product.findAll()
@@ -40,18 +39,16 @@ exports.getIndex = (req, res, next) => {
 };
 
 exports.getCart = (req, res, next) => {
-  req.user.getCart()
+  // Fetch the user's cart and simultaneously fetch all products in the cart through cart-item table
+  req.user.getCart({
+    include: ['products']
+  })
   .then(cart => {
-    return cart
-      .getProducts()
-      .then(products => {
-        res.render('shop/cart', {
-          pageTitle: 'Your Cart',
-          path: req.originalUrl,
-          cartProducts: products
-        });
-      })
-      .catch(error => console.log(error))
+    res.render('shop/cart', {
+    pageTitle: 'Your Cart',
+    path: req.originalUrl,
+    cartProducts: cart.products
+  });
   })
   .catch(error => console.log(error))
 }
@@ -81,7 +78,7 @@ exports.postCart = (req, res, next) => {
     }
 
     // We are adding a new product to the cart
-    return Product.findByPk(req.body.productId)
+    Product.findByPk(req.body.productId)
       .then(product => {
         return fetchedCart.addProduct(product.id, {
           through: { 
@@ -111,16 +108,45 @@ exports.postCartDeleteProduct = (req, res, next) => {
   .catch(error => console.log(error))
 }
 
-exports.getCheckout = (req, res, next) => {
-  res.render('shop/checkout', {
-    pageTitle: 'Cart',
-    path: req.originalUrl
+exports.postOrder = (req, res, next) => {
+  let fetchedCart;
+  // Get the user's cart and associated products in the cart
+  req.user.getCart()
+  .then(cart => {
+    fetchedCart = cart;
+    return cart.getProducts()
   })
+  // Associate a new row in the order table with a user and copy the products to the order-item table
+  .then(products => {
+    req.user.createOrder()
+    .then(order => {
+      order.addProducts(products.map(product => {
+        // For each product saved to the order table, map the quantity over from the cart-item table
+        product.orderItem = {
+          quantity: product.cartItem.quantity
+        }
+        return product;
+      }))
+    })
+  })
+  .then(() => {
+    // Clear the cart
+    fetchedCart.setProducts(null)
+    .then(res.redirect('/orders'))
+  })
+  .catch(error => console.log(error))
 }
 
 exports.getOrders = (req, res, next) => {
-  res.render('shop/orders', {
-    pageTitle: 'your Orders',
-    path: req.originalUrl
-  });
+  req.user.getOrders({
+    include: ['products']
+  })
+  .then(orders => {
+    res.render('shop/orders', {
+      pageTitle: 'your Orders',
+      path: req.originalUrl,
+      orders: orders
+    });
+  })
+  .catch(error => console.log(error))
 }
