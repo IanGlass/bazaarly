@@ -11,7 +11,7 @@ router.get('/products', adminCont.getProducts);
 
 router.post('/add-product', adminCont.postAddProduct);
 
-router.get('/edit-product/:productID', adminCont.getEditProduct);
+router.get('/edit-product/:productId', adminCont.getEditProduct);
 
 // Product id to edit is enclosed in the request body
 router.post('/edit-product', adminCont.postEditProduct);

@@ -19,8 +19,8 @@ router.get('/checkout', shopCont.getCheckout);
 
 router.get('/orders', shopCont.getOrders);
 
-// Express will now ignore productID but this middleware will get hit if it does not hit anything before
-router.get('/products/:productID', shopCont.getProduct);
+// Express will now ignore productId but this middleware will get hit if it does not hit anything before
+router.get('/products/:productId', shopCont.getProduct);
 
 // Export the router for app.js
 module.exports = router;
