@@ -138,6 +138,7 @@ exports.postOrder = (req, res, next) => {
 }
 
 exports.getOrders = (req, res, next) => {
+  // Fetch the user's orders and their associated products through the order-item table
   req.user.getOrders({
     include: ['products']
   })
