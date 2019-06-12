@@ -1,5 +1,5 @@
 const Product = require('../models/Product');
-const mongoose = require('mongoose');
+const Order = require('../models/Order');
 
 exports.getProducts = (req, res, next) => {
   Product.find()
@@ -65,62 +65,42 @@ exports.postCart = (req, res, next) => {
 }
 
 exports.postCartDeleteProduct = (req, res, next) => {
-  req.user.getCart()
-  .then(cart => {
-    return cart.getProducts({
-      where: {
-        id: req.body.productId
-      }
+  req.user
+    .removeFromCart(req.body.productId)
+    .then(() => {
+      res.redirect('/cart');
     })
-  })
-  .then(products => {
-    // Remove all quantity of the product from the cart items 
-    return products[0].cartItem.destroy()
-  })
-  .then(res.redirect('/cart'))
   .catch(error => console.log(error))
 }
 
 exports.postOrder = (req, res, next) => {
-  let fetchedCart;
-  // Get the user's cart and associated products in the cart
-  req.user.getCart()
-  .then(cart => {
-    fetchedCart = cart;
-    return cart.getProducts()
-  })
-  // Associate a new row in the order table with a user and copy the products to the order-item table
-  .then(products => {
-    req.user.createOrder()
-    .then(order => {
-      order.addProducts(products.map(product => {
-        // For each product saved to the order table, map the quantity over from the cart-item table
-        product.orderItem = {
-          quantity: product.cartItem.quantity
-        }
-        return product;
-      }))
+  req.user
+    .populate('cart.items.product')
+    .execPopulate()
+    .then(user => {
+      const order = new Order({
+        user: req.user,
+        products: user.cart.items,
+      });
+      order.save();
     })
-  })
-  .then(() => {
-    // Clear the cart
-    fetchedCart.setProducts(null)
-    .then(res.redirect('/orders'))
-  })
-  .catch(error => console.log(error))
+    .then(() => {
+      return req.user.clearCart();
+    })
+    .then(() => {
+      res.redirect('/orders')
+    })
+    .catch(error => console.log(error))
 }
 
 exports.getOrders = (req, res, next) => {
-  // Fetch the user's orders and their associated products through the order-item table
-  req.user.getOrders({
-    include: ['products']
-  })
-  .then(orders => {
-    res.render('shop/orders', {
-      pageTitle: 'your Orders',
-      path: req.originalUrl,
-      orders: orders
-    });
-  })
+  Order.find({ user: req.user })
+    .then((orders) => {
+      res.render('shop/orders', {
+        pageTitle: 'your Orders',
+        path: req.originalUrl,
+        orders: orders
+      });
+    })
   .catch(error => console.log(error))
 }

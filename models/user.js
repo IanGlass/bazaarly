@@ -28,7 +28,7 @@ const userSchema = mongoose.Schema({
 
 userSchema.methods.addToCart = function (product) {
   const cartProductIndex = this.cart.items.findIndex(cartProduct => {
-    return cartProduct.productId.toString() === product._id.toString();
+    return cartProduct.product.toString() === product._id.toString();
   });
   let newQuantity = 1;
   const updatedCartItems = [...this.cart.items];
@@ -38,7 +38,7 @@ userSchema.methods.addToCart = function (product) {
     updatedCartItems[cartProductIndex].quantity = newQuantity;
   } else {
     updatedCartItems.push({
-      productId: product._id,
+      product: product._id,
       quantity: newQuantity,
     });
   }
@@ -49,8 +49,16 @@ userSchema.methods.addToCart = function (product) {
   return this.save()
 }
 
-userSchema.methods.getCart = function() {
+userSchema.methods.removeFromCart = function(productId) {
+  this.cart.items = this.cart.items.filter(item => {
+    return item.product.toString() !== productId.toString();
+  })
+  return this.save();
+}
 
+userSchema.methods.clearCart = function() {
+  this.cart = { items: [] };
+  return this.save();
 }
 
 module.exports = mongoose.model('User', userSchema);
