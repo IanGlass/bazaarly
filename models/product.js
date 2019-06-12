@@ -1,37 +1,27 @@
-const Sequelize = require('sequelize');
-const sequelize = require('../helpers/database');
+const mongoose = require('mongoose');
 
-const Product = sequelize.define('product', {
-  id: {
-    type: Sequelize.INTEGER,
-    autoIncrement: true,
-    allowNull: false,
-    primaryKey: true
-  },
+const productSchema = new mongoose.Schema({
   title: {
-    type: Sequelize.STRING,
-    allowNull: false
+    type: String,
+    required: true,
   },
   price: {
-    type: Sequelize.DOUBLE,
-    allowNull: false
-  },
-  imageUrl: {
-    type: Sequelize.STRING,
-    allowNull: false
+    type: Number,
+    required: true,
   },
   description: {
-    type: Sequelize.STRING,
-    allowNull: false
+    type: String,
+    required: true,
   },
-  // Associated foreign key for user table, SHOULD NOT NEED TO DEFINE THIS MANUALLY
-  userId: {
-    type: Sequelize.INTEGER,
-    references: {
-      model: 'users',
-      key: 'id'
-    }
+  imageUrl: {
+    type: String,
+    required: true,
+  },
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true,
   }
 });
 
-module.exports = Product;
+module.exports = mongoose.model('Product', productSchema);

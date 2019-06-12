@@ -10,13 +10,16 @@ exports.getAddProduct = (req, res, next) => {
 }
 
 exports.postAddProduct = (req, res, next) => {
-  req.user
-    .createProduct({
-      title: req.body.title,
-      price: req.body.price,
-      imageUrl: req.body.imageUrl,
-      description: req.body.description
-    })
+  console.log(req.user);
+  const product = new Product({
+    title:        req.body.title,
+    price:        req.body.price,
+    description:  req.body.description,
+    imageUrl:     req.body.imageUrl,
+    userId:       req.user._id,
+  })
+  product
+    .save()
     .then(() => {
       res.redirect('/admin/products');
     })
@@ -25,10 +28,8 @@ exports.postAddProduct = (req, res, next) => {
 
 // add-product and edit-product share the same view
 exports.getEditProduct = (req, res, next) => {
-  req.user
-    .getProducts({ where: { id: req.params.productId } })
-    .then(products => {
-      console.log(products[0])
+  Product.findById(req.params.productId)
+    .then(product => {
       if (!product) {
         return res.redirect('/');
       }
@@ -37,7 +38,7 @@ exports.getEditProduct = (req, res, next) => {
         pageTitle: 'Edit Product',
         path: req.originalUrl,
         editMode: true,
-        product: products[0]
+        product: product
       });
     })
     .catch(error => console.log(error))
@@ -45,7 +46,7 @@ exports.getEditProduct = (req, res, next) => {
 
 exports.postEditProduct = (req, res, next) => {
   Product
-    .findByPk(req.body.productId)
+    .findById(req.body.productId)
     .then(product => {
       // Add the new value of body to the fetched product
       product.title = req.body.title;
@@ -55,30 +56,25 @@ exports.postEditProduct = (req, res, next) => {
       // Update the old product
       product.save();
     })
-    .catch(error => console.log(error))
     // Called after product.save()
     .then(() => {
       res.redirect('/admin/products');
     })
-}
+    .catch(error => console.log(error))
+  }
 
 exports.postDeleteProduct = (req, res, next) => {
   Product
-    .findByPk(req.body.productId)
-    .then(product => {
-      return product.destroy();
-    })
-    .catch(error => console.log(error))
+    .findByIdAndRemove(req.body.productId)
     .then(() => {
       res.redirect('/admin/products')
     })
+    .catch(error => console.log(error))
 }
 
 exports.getProducts = (req, res, next) => {
-  req.user
-    .getProducts()
+  Product.find()
     .then((products) => {
-      // Pass in the path which determines which header is currently active in main-layout.pug
       res.render('admin/products', {
         pageTitle: 'Admin Products',
         path: req.originalUrl,

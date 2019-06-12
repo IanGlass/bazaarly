@@ -1,7 +1,8 @@
-const Product = require('../models/Product')
+const Product = require('../models/Product');
+const mongoose = require('mongoose');
 
 exports.getProducts = (req, res, next) => {
-  Product.findAll()
+  Product.find()
     .then(products => {
       // Pass in the path which determines which header is currently active in main-layout.pug
       res.render('shop/products', {
@@ -14,7 +15,7 @@ exports.getProducts = (req, res, next) => {
 }
 
 exports.getProduct = (req, res, next) => {
-  Product.findByPk(req.params.productId)
+  Product.findById(req.params.productId)
     .then(product => {
       res.render('shop/product-details', {
         pageTitle: 'Product Details',
@@ -26,7 +27,7 @@ exports.getProduct = (req, res, next) => {
 }
 
 exports.getIndex = (req, res, next) => {
-  Product.findAll()
+  Product.find()
     .then(products => {
       // Pass in the path which determines which header is currently active
       res.render('shop/index', {
@@ -39,55 +40,27 @@ exports.getIndex = (req, res, next) => {
 };
 
 exports.getCart = (req, res, next) => {
-  // Fetch the user's cart and simultaneously fetch all products in the cart through cart-item table
-  req.user.getCart({
-    include: ['products']
-  })
-  .then(cart => {
-    res.render('shop/cart', {
-    pageTitle: 'Your Cart',
-    path: req.originalUrl,
-    cartProducts: cart.products
-  });
-  })
-  .catch(error => console.log(error))
+  req.user
+    .populate('cart.items.product')
+    .execPopulate()
+    .then(user => {
+      res.render('shop/cart', {
+        pageTitle: 'Your Cart',
+        path: req.originalUrl,
+        cartProducts: user.cart.items,
+      });
+    })
+    .catch(error => console.log(error))
 }
 
 exports.postCart = (req, res, next) => {
-  let fetchedCart;
-  // Fetch the user's cart
-  req.user.getCart()
-  .then(cart => {
-    fetchedCart = cart;
-    // Get all the products in the user's cart which matches the product id
-    return cart.getProducts({ 
-      where: { 
-        id: req.body.productId 
-      }
-    });
-  })
-  // Increment the cart item quantity or add a new item to the cart
-  .then(products => {
-    // We have a cart and found an existing product, increment the quantity
-    if (products.length && products[0]) {
-      return fetchedCart.addProduct(products[0].id, {
-        through: {
-          quantity: products[0].cartItem.quantity + 1
-        }
-      })
-    }
-
-    // We are adding a new product to the cart
-    Product.findByPk(req.body.productId)
-      .then(product => {
-        return fetchedCart.addProduct(product.id, {
-          through: { 
-            quantity: 1 
-          } 
-        });
-      })
-  })
-  .then(res.redirect('/cart'))
+  Product.findById(req.body.productId)
+    .then(product => {
+      return req.user.addToCart(product);
+    })
+    .then(() => {
+      res.redirect('/cart');
+    })
   .catch(error => console.log(error))
 }
 
