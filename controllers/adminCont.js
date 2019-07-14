@@ -5,12 +5,12 @@ exports.getAddProduct = (req, res, next) => {
   res.render('admin/edit-product', {
     pageTitle: 'Add Product',
     path: req.originalUrl,
-    editMode: false
+    editMode: false,
+    authenticated: req.session.authenticated,
   });
 }
 
 exports.postAddProduct = (req, res, next) => {
-  console.log(req.user);
   const product = new Product({
     title:        req.body.title,
     price:        req.body.price,
@@ -78,7 +78,8 @@ exports.getProducts = (req, res, next) => {
       res.render('admin/products', {
         pageTitle: 'Admin Products',
         path: req.originalUrl,
-        prods: products
+        prods: products,
+        authenticated: req.session.authenticated,
       });
     })
     .catch(error => console.log(error))
