@@ -63,16 +63,20 @@ exports.postSignup = (req, res, next) => {
       if (existingUser) {
         return res.redirect('/signup');
       }
-      return User.create({
-        email: req.body.email,
-        password: req.body.password,
-        cart: {
-          items: [],
-        }
-      })
-    })
-    .then(() => {
-      res.redirect('/');
+      bcrypt
+        .hash(req.body.password, 12)
+        .then(hashedPassword => {
+          return User.create({
+            email: req.body.email,
+            password: hashedPassword,
+            cart: {
+              items: [],
+            }
+          })
+        })
+        .then(() => {
+          res.redirect('/');
+        })
     })
     .catch(error => console.log(error))
 }
