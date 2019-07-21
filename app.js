@@ -4,6 +4,7 @@ const path = require('path');
 const mongoose = require('mongoose');
 const session = require('express-session');
 const MongoDBStore = require('connect-mongodb-session')(session);
+const csrf = require('csurf');
 
 const User = require('./models/User');
 const errorCont = require('./controllers/errorCont');
@@ -19,6 +20,8 @@ const store = new MongoDBStore({
   uri: MONGODB_URI,
   collection: 'sessions',
 });
+
+const csrfProtection = csrf();
 
 // Tell express to use ejs template engine
 app.set('view engine', 'ejs');
@@ -38,6 +41,9 @@ app.use(session({
   store: store,
 }));
 
+// Must be initialised after the session, as the session is used
+app.use(csrfProtection);
+
 // Fetch the user object using our mongoose user model and session stored user Id so all model methods are available for this request
 app.use((req, res, next) => {
   if (!req.session.user) {
@@ -50,6 +56,12 @@ app.use((req, res, next) => {
     })
     .catch(error => console.log(error))
 });
+
+// Add session authentication and csrf token to all views
+app.use((req, res, next) => {
+  res.locals.authenticated = req.session.authenticated;
+  res.locals.csrfToken = req.csrfToken();
+})
 
 app.use('/admin', adminData.routes);
 app.use(shopRoutes);

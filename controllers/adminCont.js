@@ -1,4 +1,4 @@
-const Product = require('../models/Product')
+const Product = require('../models/Product');
 
 exports.getAddProduct = (req, res, next) => {
   // Pass in the path which determines which header is currently active in main-layout.pug
