@@ -1,5 +1,9 @@
-const User = require('../models/User');
 const bcrypt = require('bcryptjs');
+const sgMail = require('@sendgrid/mail');
+
+sgMail.setApiKey('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');
+
+const User = require('../models/User');
 
 exports.getLogin = (req, res, next) => {
   res.render('auth/login', {
@@ -79,6 +83,13 @@ exports.postSignup = (req, res, next) => {
           })
         })
         .then(() => {
+          sgMail.send({
+            to: req.body.email,
+            from: 'shop@node-complete.com',
+            subject: 'Signup Succeeded!',
+            text: 'and easy to do anywhere, even with Node.js',
+            html: '<h1>You successfully signed up</h1>'
+          });
           res.redirect('/');
         })
     })
