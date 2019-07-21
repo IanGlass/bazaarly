@@ -4,8 +4,6 @@ const bcrypt = require('bcryptjs');
 exports.getLogin = (req, res, next) => {
   res.render('auth/login', {
     pageTitle: 'Login',
-    path: req.originalUrl,
-    authenticated: req.session.authenticated,
   });
 }
 

@@ -1,12 +1,9 @@
 const Product = require('../models/Product');
 
 exports.getAddProduct = (req, res, next) => {
-  // Pass in the path which determines which header is currently active in main-layout.pug
   res.render('admin/edit-product', {
     pageTitle: 'Add Product',
-    path: req.originalUrl,
     editMode: false,
-    authenticated: req.session.authenticated,
   });
 }
 
@@ -36,7 +33,6 @@ exports.getEditProduct = (req, res, next) => {
 
       res.render('admin/edit-product', {
         pageTitle: 'Edit Product',
-        path: req.originalUrl,
         editMode: true,
         product: product
       });
@@ -56,7 +52,6 @@ exports.postEditProduct = (req, res, next) => {
       // Update the old product
       product.save();
     })
-    // Called after product.save()
     .then(() => {
       res.redirect('/admin/products');
     })
@@ -77,9 +72,7 @@ exports.getProducts = (req, res, next) => {
     .then((products) => {
       res.render('admin/products', {
         pageTitle: 'Admin Products',
-        path: req.originalUrl,
         prods: products,
-        authenticated: req.session.authenticated,
       });
     })
     .catch(error => console.log(error))

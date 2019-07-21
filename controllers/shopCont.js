@@ -7,9 +7,7 @@ exports.getIndex = (req, res, next) => {
       // Pass in the path which determines which header is currently active
       res.render('shop/index', {
         pageTitle: 'Shop',
-        path: req.originalUrl,
         prods: products,
-        authenticated: req.session.authenticated,
       });
     })
     .catch(error => console.log(error))
@@ -21,9 +19,7 @@ exports.getProducts = (req, res, next) => {
       // Pass in the path which determines which header is currently active in main-layout.pug
       res.render('shop/products', {
         pageTitle: 'Shop',
-        path: req.originalUrl,
         prods: products,
-        authenticated: req.session.authenticated,
       });
     })
     .catch(error => console.log(error))
@@ -34,9 +30,7 @@ exports.getProduct = (req, res, next) => {
     .then(product => {
       res.render('shop/product-details', {
         pageTitle: 'Product Details',
-        path: req.originalUrl,
         product: product,
-        authenticated: req.session.authenticated,
       });
     })
     .catch(error => console.log(error))
@@ -49,9 +43,7 @@ exports.getCart = (req, res, next) => {
     .then(user => {
       res.render('shop/cart', {
         pageTitle: 'Your Cart',
-        path: req.originalUrl,
         cartProducts: user.cart.items,
-        authenticated: req.session.authenticated,
       });
     })
     .catch(error => console.log(error))
@@ -101,9 +93,7 @@ exports.getOrders = (req, res, next) => {
     .then((orders) => {
       res.render('shop/orders', {
         pageTitle: 'your Orders',
-        path: req.originalUrl,
         orders: orders,
-        authenticated: req.session.authenticated,
       });
     })
   .catch(error => console.log(error))

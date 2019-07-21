@@ -57,10 +57,12 @@ app.use((req, res, next) => {
     .catch(error => console.log(error))
 });
 
-// Add session authentication and csrf token to all views
+// Add session authentication, csrf token and request path to all views
 app.use((req, res, next) => {
+  res.locals.path = req.originalUrl;
   res.locals.authenticated = req.session.authenticated;
   res.locals.csrfToken = req.csrfToken();
+  next();
 })
 
 app.use('/admin', adminData.routes);
