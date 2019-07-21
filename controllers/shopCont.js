@@ -1,6 +1,20 @@
 const Product = require('../models/Product');
 const Order = require('../models/Order');
 
+exports.getIndex = (req, res, next) => {
+  Product.find()
+    .then(products => {
+      // Pass in the path which determines which header is currently active
+      res.render('shop/index', {
+        pageTitle: 'Shop',
+        path: req.originalUrl,
+        prods: products,
+        authenticated: req.session.authenticated,
+      });
+    })
+    .catch(error => console.log(error))
+};
+
 exports.getProducts = (req, res, next) => {
   Product.find()
     .then(products => {
@@ -27,20 +41,6 @@ exports.getProduct = (req, res, next) => {
     })
     .catch(error => console.log(error))
 }
-
-exports.getIndex = (req, res, next) => {
-  Product.find()
-    .then(products => {
-      // Pass in the path which determines which header is currently active
-      res.render('shop/index', {
-        pageTitle: 'Shop',
-        path: req.originalUrl,
-        prods: products,
-        authenticated: req.session.authenticated,
-      });
-    })
-    .catch(error => console.log(error))
-};
 
 exports.getCart = (req, res, next) => {
   req.user
