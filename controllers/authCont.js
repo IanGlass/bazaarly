@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const bcrypt = require('bcryptjs');
 
 exports.getLogin = (req, res, next) => {
   res.render('auth/login', {
@@ -11,15 +12,29 @@ exports.getLogin = (req, res, next) => {
 // Fetch the user and add the user to the session
 exports.postLogin = (req, res, next) => {
   User
-    .findOne({ name: 'visitor' })
+    .findOne({ email: req.body.email })
     .then(user => {
-      req.session.user = user;
-      req.session.authenticated = true;
-      // Can take time to save, only redirect once session is saved
-      req.session.save((error) => {
-        if (error) {console.log(error);}
-        res.redirect('/');
-      })
+      if (!user) {
+        return res.redirect('/login');
+      }
+      bcrypt
+        .compare(req.body.password, user.password)
+        .then(matched => {
+          if (!matched) {
+            return res.redirect('/login');
+          }
+          req.session.user = user;
+          req.session.authenticated = true;
+          // Can take time to save, only redirect once session is saved
+          req.session.save((error) => {
+            if (error) {console.log(error);}
+            return res.redirect('/');
+          })
+        })
+        .catch(error => {
+          console.log(error);
+          res.redirect('/login');
+        })
     })
     .catch(error => console.log(error))
 }
