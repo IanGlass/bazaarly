@@ -4,6 +4,7 @@ const bcrypt = require('bcryptjs');
 exports.getLogin = (req, res, next) => {
   res.render('auth/login', {
     pageTitle: 'Login',
+    errorMessage: req.flash('error'),
   });
 }
 
@@ -13,17 +14,19 @@ exports.postLogin = (req, res, next) => {
     .findOne({ email: req.body.email })
     .then(user => {
       if (!user) {
+        req.flash('error', 'Invalid email or password');
         return res.redirect('/login');
       }
       bcrypt
         .compare(req.body.password, user.password)
         .then(matched => {
           if (!matched) {
+            req.flash('error', 'Invalid email or password');
             return res.redirect('/login');
           }
           req.session.user = user;
           req.session.authenticated = true;
-          // Can take time to save, only redirect once session is saved
+          // Can take some ms to save, only redirect once session is saved
           req.session.save((error) => {
             if (error) {console.log(error);}
             return res.redirect('/');
@@ -31,6 +34,7 @@ exports.postLogin = (req, res, next) => {
         })
         .catch(error => {
           console.log(error);
+          req.flash('error', 'An unknown error occurred');
           res.redirect('/login');
         })
     })

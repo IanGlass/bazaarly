@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 const session = require('express-session');
 const MongoDBStore = require('connect-mongodb-session')(session);
 const csrf = require('csurf');
+const flash = require('connect-flash');
 
 const User = require('./models/User');
 const errorCont = require('./controllers/errorCont');
@@ -43,6 +44,8 @@ app.use(session({
 
 // Must be initialised after the session, as the session is used
 app.use(csrfProtection);
+// Used to res.redirect error messages back to client
+app.use(flash());
 
 // Fetch the user object using our mongoose user model and session stored user Id so all model methods are available for this request
 app.use((req, res, next) => {

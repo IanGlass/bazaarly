@@ -19,6 +19,9 @@
             </div>
 
             <button type="submit" class="btn">Login</button>
+            <% if (errorMessage) { %>
+                <div class="user-message user-message--error"><%= errorMessage %></div>
+            <% } %>
             <input type="hidden" name="_csrf" value="<%= csrfToken %>">
         </form>
     </main>
