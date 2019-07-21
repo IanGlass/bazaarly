@@ -61,20 +61,7 @@ app.use(errorCont.error404);
 // Connected to DB, now spin up server and listen for requests
 mongoose.connect(MONGODB_URI, {useNewUrlParser: true})
 .then(() => {
-  User.findOne()
-    .then(user => {
-      if (!user) {
-        const user = new User({
-          name: 'visitor',
-          email: 'test@test.com',
-          cart: {
-            items: []
-          }
-        })
-        user.save()
-      }
-      app.listen(3000)
-    })
+  app.listen(3000);
 })
 .catch(error => console.log(error));
 

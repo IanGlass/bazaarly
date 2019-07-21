@@ -10,7 +10,8 @@ exports.getLogin = (req, res, next) => {
 
 // Fetch the user and add the user to the session
 exports.postLogin = (req, res, next) => {
-  User.findOne({ name: 'visitor' })
+  User
+    .findOne({ name: 'visitor' })
     .then(user => {
       req.session.user = user;
       req.session.authenticated = true;
@@ -29,4 +30,34 @@ exports.postLogout = (req, res, next) => {
     if (error) { console.log(error); }
     res.redirect('/');
   });
+}
+
+exports.getSignup = (req, res, next) => {
+  res.render('auth/signup', {
+    path: '/signup',
+    pageTitle: 'Signup',
+    authenticated: false
+  });
+};
+
+exports.postSignup = (req, res, next) => {
+  // Check for duplicate email addresses first
+  User
+    .findOne({ email: req.body.email })
+    .then(existingUser => {
+      if (existingUser) {
+        return res.redirect('/signup');
+      }
+      return User.create({
+        email: req.body.email,
+        password: req.body.password,
+        cart: {
+          items: [],
+        }
+      })
+    })
+    .then(() => {
+      res.redirect('/');
+    })
+    .catch(error => console.log(error))
 }

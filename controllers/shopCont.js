@@ -82,11 +82,10 @@ exports.postOrder = (req, res, next) => {
     .populate('cart.items.product')
     .execPopulate()
     .then(user => {
-      const order = new Order({
+      return Order.create({
         user: req.user,
         products: user.cart.items,
-      });
-      order.save();
+      })
     })
     .then(() => {
       return req.user.clearCart();
