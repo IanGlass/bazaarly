@@ -50,7 +50,8 @@ exports.getEditProduct = (req, res, next) => {
       res.render('admin/edit-product', {
         pageTitle: 'Edit Product',
         editMode: true,
-        product: product
+        product: product,
+        errorMessage: req.flash('error'),
       });
     })
     .catch(error => console.log(error))
@@ -58,11 +59,8 @@ exports.getEditProduct = (req, res, next) => {
 
 exports.postEditProduct = (req, res, next) => {
   Product
-    .findById(req.body.productId)
+    .findOne({ _id: req.body.productId, user: req.session.user._id })
     .then(product => {
-      if (product.user !== req.session.user) {
-        return res.redirect('/');
-      }
       // Add the new value of body to the fetched product
       product.title = req.body.title;
       product.price = req.body.price;
@@ -75,12 +73,15 @@ exports.postEditProduct = (req, res, next) => {
           res.redirect('/admin/products');
         })
     })
-    .catch(error => console.log(error))
+    .catch(error => {
+      console.log(error);
+      res.redirect('/');
+    })
   }
 
 exports.postDeleteProduct = (req, res, next) => {
   Product
-    .deleteOne({ _id: req.body.productId, user: req.session.use })
+    .deleteOne({ _id: req.body.productId, user: req.session.user._id })
     .then(() => {
       res.redirect('/admin/products')
     })
