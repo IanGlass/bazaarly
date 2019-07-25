@@ -60,23 +60,27 @@ exports.postEditProduct = (req, res, next) => {
   Product
     .findById(req.body.productId)
     .then(product => {
+      if (product.user !== req.session.user) {
+        return res.redirect('/');
+      }
       // Add the new value of body to the fetched product
       product.title = req.body.title;
       product.price = req.body.price;
       product.imageUrl = req.body.imageUrl;
       product.description = req.body.description;
       // Update the old product
-      product.save();
-    })
-    .then(() => {
-      res.redirect('/admin/products');
+      product
+        .save()
+        .then(() => {
+          res.redirect('/admin/products');
+        })
     })
     .catch(error => console.log(error))
   }
 
 exports.postDeleteProduct = (req, res, next) => {
   Product
-    .findByIdAndRemove(req.body.productId)
+    .deleteOne({ _id: req.body.productId, user: req.session.use })
     .then(() => {
       res.redirect('/admin/products')
     })
