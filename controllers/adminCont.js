@@ -4,6 +4,7 @@ exports.getAddProduct = (req, res, next) => {
   res.render('admin/edit-product', {
     pageTitle: 'Add Product',
     editMode: false,
+    errorMessage: req.flash('error'),
   });
 }
 
@@ -20,7 +21,11 @@ exports.postAddProduct = (req, res, next) => {
     .then(() => {
       res.redirect('/admin/products');
     })
-    .catch(error => console.log(error))
+    .catch((error) => {
+      req.flash('error', 'Missing product information');
+      res.redirect('/admin/add-product');
+      console.log(error);
+    })
 }
 
 exports.getProducts = (req, res, next) => {

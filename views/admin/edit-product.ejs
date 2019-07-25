@@ -33,6 +33,9 @@
             <% } %>
 
             <button type="submit" class="btn"><%= editMode ? "Update Product" : "Add Product" %></button>
+            <% if (errorMessage.length) { %>
+                <div class="user-message user-message--error"><%= errorMessage %></div>
+            <% } %>
             <input type="hidden" name="_csrf" value="<%= csrfToken %>">
         </form>
     </main>
