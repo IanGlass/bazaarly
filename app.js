@@ -10,8 +10,6 @@ const flash = require('connect-flash');
 // Stores secrets in process env variables
 require('dotenv').config()
 
-console.log(process.env);
-
 const User = require('./models/User');
 const errorCont = require('./controllers/errorCont');
 const adminData = require('./routes/admin');
@@ -49,7 +47,7 @@ app.use(session({
 
 // Must be initialised after the session, as the session is used
 app.use(csrfProtection);
-// Used to res.redirect error messages back to client
+// Used to res.redirect error messages back to client without persistent storage in session
 app.use(flash());
 
 // Fetch the user object using our mongoose user model and session stored user Id so all model methods are available for this request
