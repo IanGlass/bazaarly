@@ -18,6 +18,9 @@
             <% if (errorMessage.length) { %>
                 <div class="user-message user-message--error"><%= errorMessage %></div>
             <% } %>
+            <% if (successMessage.length) { %>
+                <div class="user-message"><%= successMessage %></div>
+            <% } %>
             <input type="hidden" name="_csrf" value="<%= csrfToken %>">
         </form>
     </main>

@@ -9,6 +9,7 @@ const User = require('../models/User');
 exports.getLogin = (req, res, next) => {
   res.render('auth/login', {
     pageTitle: 'Login',
+    successMessage: req.flash('success'),
     errorMessage: req.flash('error'),
   });
 }
@@ -100,6 +101,7 @@ exports.getReset = (req, res, next) => {
   res.render('auth/reset', {
     pageTitle: 'Reset',
     errorMessage: req.flash('error'),
+    successMessage: req.flash('success')
   })
 }
 
@@ -125,11 +127,63 @@ exports.postReset = (req, res, next) => {
         sgMail.send({
           to: req.body.email,
           from: 'shop@node-complete.com',
-          subject: 'Signup Succeeded!',
-          text: 'and easy to do anywhere, even with Node.js',
-          html: '<h1>You successfully signed up</h1>'
+          subject: 'Password Reset',
+          html: `
+            <p>You requested a password reset</p>
+            <p>Click this <a href="http://localhost:3000/new-password/${token}">link</a> to set a new password</p>
+          `
         });
+        req.flash('success', 'Password reset link sent, please check your email');
+        return res.redirect('/reset');
       })
       .catch(error => console.log(error))
   });
+}
+
+exports.getNewPassword = (req, res, next) => {
+  // Only render if valid user for reset token and token not expired
+  User
+    .findOne({
+      resetToken: req.params.resetToken,
+      resetTokenExpiration: {
+        $gt: Date.now()
+      }
+    })
+    .then((user) => {
+      if (!user) {
+        return res.redirect('/')
+      }
+      res.render('auth/new-password', {
+        pageTitle: 'New Password',
+        userId: user._id.toString(),
+        resetToken: req.params.resetToken
+      });
+    })
+    .catch(error => console.log(error))
+}
+
+exports.postNewPassword = (req, res, next) => {
+  User
+    .findOne({
+      resetToken: req.body.resetToken,
+      resetTokenExpiration: {
+        $gt: Date.now()
+      },
+      _id: req.body.userId
+    })
+    .then(user => {
+      bcrypt
+        .hash(req.body.password, 12)
+        .then(hashedPassword => {
+          user.password = hashedPassword;
+          user.resetToken = null;
+          user.resetTokenExpiration = undefined;
+          return user.save();
+        })
+        .then(() => {
+          req.flash('success', 'Password successfully changed');
+          res.redirect('/login');
+        })
+    })
+    .catch(error => console.log(error))
 }
