@@ -14,4 +14,6 @@ router.get('/signup', authCont.getSignup);
 
 router.post('/signup', authCont.postSignup);
 
+router.get('/reset', authCont.getReset);
+
 module.exports = router;

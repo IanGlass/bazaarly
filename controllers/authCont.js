@@ -55,7 +55,6 @@ exports.postLogout = (req, res, next) => {
 
 exports.getSignup = (req, res, next) => {
   res.render('auth/signup', {
-    path: '/signup',
     pageTitle: 'Signup',
     authenticated: false,
     errorMessage: req.flash('error'),
@@ -94,4 +93,42 @@ exports.postSignup = (req, res, next) => {
         })
     })
     .catch(error => console.log(error))
+}
+
+exports.getReset = (req, res, next) => {
+  res.render('auth/reset', {
+    pageTitle: 'Reset',
+    errorMessage: req.flash('error'),
+  })
+}
+
+exports.postReset = (req, res, next) => {
+  crypto.randomBytes(32, (error, buffer) => {
+    if (error) {
+      console.log(error);
+      return res.redirect('/reset');
+    }
+    const token = buffer.toString('hex');
+    User
+      .findOne({ email: req.body.email })
+      .then(user => {
+        if (!user) {
+          req.flash('error', 'No account with that E-Mail found.')
+          return res.redirect('/reset');
+        }
+        user.resetToken = token;
+        user.resetTokenExpiration = Date.now() + 60*60*1000;
+        return user.save()
+      })
+      .then(result => {
+        sgMail.send({
+          to: req.body.email,
+          from: 'shop@node-complete.com',
+          subject: 'Signup Succeeded!',
+          text: 'and easy to do anywhere, even with Node.js',
+          html: '<h1>You successfully signed up</h1>'
+        });
+      })
+      .catch(error => console.log(error))
+  });
 }
