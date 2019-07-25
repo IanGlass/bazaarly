@@ -7,13 +7,18 @@ const MongoDBStore = require('connect-mongodb-session')(session);
 const csrf = require('csurf');
 const flash = require('connect-flash');
 
+// Stores secrets in process env variables
+require('dotenv').config()
+
+console.log(process.env);
+
 const User = require('./models/User');
 const errorCont = require('./controllers/errorCont');
 const adminData = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
 const authRoutes = require('./routes/auth');
 
-const MONGODB_URI = 'mongodb+srv://shopIt:shopIt@cluster0-pvmln.mongodb.net/shop?';
+const MONGODB_URI = `mongodb+srv://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@cluster0-pvmln.mongodb.net/shop?`;
 
 const app = express();
 
