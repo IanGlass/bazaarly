@@ -13,12 +13,23 @@ exports.postAddProduct = (req, res, next) => {
     price:        req.body.price,
     description:  req.body.description,
     imageUrl:     req.body.imageUrl,
-    userId:       req.user._id,
+    user:         req.session.user._id,
   })
   product
     .save()
     .then(() => {
       res.redirect('/admin/products');
+    })
+    .catch(error => console.log(error))
+}
+
+exports.getProducts = (req, res, next) => {
+  Product.find({ user: req.session.user._id })
+    .then((products) => {
+      res.render('admin/products', {
+        pageTitle: 'Admin Products',
+        prods: products,
+      });
     })
     .catch(error => console.log(error))
 }
@@ -63,17 +74,6 @@ exports.postDeleteProduct = (req, res, next) => {
     .findByIdAndRemove(req.body.productId)
     .then(() => {
       res.redirect('/admin/products')
-    })
-    .catch(error => console.log(error))
-}
-
-exports.getProducts = (req, res, next) => {
-  Product.find()
-    .then((products) => {
-      res.render('admin/products', {
-        pageTitle: 'Admin Products',
-        prods: products,
-      });
     })
     .catch(error => console.log(error))
 }
