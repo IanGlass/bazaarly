@@ -12,11 +12,27 @@ exports.getLogin = (req, res, next) => {
     pageTitle: 'Login',
     successMessage: req.flash('success'),
     errorMessage: req.flash('error'),
+    oldInput: {
+      email: null,
+      password: null,
+    }
   });
 }
 
 // Fetch the user and add the user to the session
 exports.postLogin = (req, res, next) => {
+  // Catch user input errors
+  if (!validationResult(req).isEmpty()) {
+    return res.status(422).render('auth/login', {
+      pageTitle: 'Login',
+      successMessage: req.flash('success'),
+      errorMessage: validationResult(req).errors.map(error => error.msg),
+      oldInput: {
+        email: req.body.email,
+        password: req.body.password,
+      }
+    });
+  }
   User
     .findOne({ email: req.body.email })
     .then(user => {
@@ -61,17 +77,27 @@ exports.getSignup = (req, res, next) => {
     pageTitle: 'Signup',
     authenticated: false,
     errorMessage: req.flash('error'),
+    oldInput: {
+      email: req.body.email,
+      password: req.body.password,
+      confirmPassword: req.body.confirmPassword,
+    },
   });
 };
 
 exports.postSignup = (req, res, next) => {
-  console.log(validationResult(req));
   // Catch user input errors
   if (!validationResult(req).isEmpty()) {
     return res.status(422).render('auth/signup', {
       pageTitle: 'Signup',
-      errorMessage: validationResult(req).errors.map(error => error.msg)
-    })
+      successMessage: req.flash('success'),
+      errorMessage: validationResult(req).errors.map(error => error.msg),
+      oldInput: {
+        email: req.body.email,
+        password: req.body.password,
+        confirmPassword: req.body.confirmPassword,
+      },
+    });
   }
   // Check for duplicate email addresses first
   User

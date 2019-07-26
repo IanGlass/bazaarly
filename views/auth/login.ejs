@@ -11,11 +11,11 @@
         <form action="/login" method="POST" class="login-form">
             <div class="form-control">
                 <label for="email">E-Mail</label>
-                <input type="email" name="email" id="email" %>">
+                <input type="email" name="email" id="email" value="<%= oldInput.email %>">
             </div>
             <div class="form-control">
                 <label for="password">Password</label>
-                <input type="password" name="password" id="password" %>">
+                <input type="password" name="password" id="password" value="<%= oldInput.password %>">
             </div>
 
             <button type="submit" class="btn">Login</button>
