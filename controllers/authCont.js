@@ -140,7 +140,8 @@ exports.getReset = (req, res, next) => {
   res.render('auth/reset', {
     pageTitle: 'Reset',
     errorMessage: req.flash('error'),
-    successMessage: req.flash('success')
+    successMessage: req.flash('success'),
+    oldInput: req.flash('oldInput')[0],
   })
 }
 

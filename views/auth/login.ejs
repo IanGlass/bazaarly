@@ -11,11 +11,11 @@
         <form action="/login" method="POST" class="login-form">
             <div class="form-control">
                 <label for="email">E-Mail</label>
-                <input class="<%= errorMessage.find(error => error.param === 'email') ? 'invalid' : '' %>" type="email" name="email" id="email" value="<%= oldInput.email %>">
+                <input class="<%= errorMessage.find(error => error.param === 'email') ? 'invalid' : '' %>" type="email" name="email" id="email" value="<%= oldInput ? oldInput.email : null %>">
             </div>
             <div class="form-control">
                 <label for="password">Password</label>
-                <input class="<%= errorMessage.find(error => error.param === 'password') ? 'invalid' : '' %>" type="password" name="password" id="password" value="<%= oldInput.password %>">
+                <input class="<%= errorMessage.find(error => error.param === 'password') ? 'invalid' : '' %>" type="password" name="password" id="password" value="<%= oldInput ? oldInput.password : null %>">
             </div>
 
             <button type="submit" class="btn">Login</button>
