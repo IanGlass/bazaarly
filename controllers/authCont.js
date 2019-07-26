@@ -91,7 +91,7 @@ exports.postSignup = (req, res, next) => {
             text: 'and easy to do anywhere, even with Node.js',
             html: '<h1>You successfully signed up</h1>'
           });
-          res.redirect('/');
+          res.redirect('/login');
         })
     })
     .catch(error => console.log(error))
@@ -130,7 +130,7 @@ exports.postReset = (req, res, next) => {
           subject: 'Password Reset',
           html: `
             <p>You requested a password reset</p>
-            <p>Click this <a href="http://localhost:3000/new-password/${token}">link</a> to set a new password</p>
+            <p>Click this <a href="http://${req.get('host')}/new-password/${token}">link</a> to set a new password</p>
           `
         });
         req.flash('success', 'Password reset link sent, please check your email');
