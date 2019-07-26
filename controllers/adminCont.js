@@ -58,7 +58,6 @@ exports.getEditProduct = (req, res, next) => {
       if (!product) {
         return res.redirect('/');
       }
-
       res.render('admin/edit-product', {
         pageTitle: 'Edit Product',
         successMessage: req.flash('success'),

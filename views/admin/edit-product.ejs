@@ -11,19 +11,19 @@
         <form action="/admin/<%= product ? 'edit-product' : 'add-product' %>" method="POST" class="product-form">
             <div class="form-control">
                 <label for="title">Title</label>
-                <input type="text" name="title" id="title" value="<%= product ? product.title : null %>">
+                <input class="<%= errorMessage.find(error => error.param === 'title') ? 'invalid' : '' %>" type="text" name="title" id="title" value="<%= product ? product.title : null %>">
             </div>
             <div class="form-control">
                 <label for="imageUrl">Image Url</label>
-                <input type="text" name="imageUrl" id="imageUrl" value="<%= product ? product.imageUrl : null %>">
+                <input class="<%= errorMessage.find(error => error.param === 'imageUrl') ? 'invalid' : '' %>" type="text" name="imageUrl" id="imageUrl" value="<%= product ? product.imageUrl : null %>">
             </div>
             <div class="form-control">
                 <label for="price">Price</label>
-                <input type="number" name="price" id="price" step="0.01" value="<%= product ? product.price : null %>">
+                <input class="<%= errorMessage.find(error => error.param === 'price') ? 'invalid' : '' %>" type="number" name="price" id="price" step="0.01" value="<%= product ? product.price : null %>">
             </div>
             <div class="form-control">
                 <label for="description">description</label>
-                <textarea name="description" id="description" rows=5><%= product ? product.description : null %></textarea>
+                <textarea class="<%= errorMessage.find(error => error.param === 'description') ? 'invalid' : '' %>" name="description" id="description" rows=5><%= product ? product.description : null %></textarea>
             </div>
 
             <% if (product) { %>
