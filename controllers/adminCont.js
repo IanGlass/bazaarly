@@ -34,7 +34,7 @@ exports.postAddProduct = (req, res, next) => {
       res.redirect('/admin/products');
     })
     .catch((error) => {
-      req.flash('error', 'Missing product information');
+      req.flash('error', [{ msg: 'Missing product information' }]);
       res.redirect('/admin/add-product');
       console.log(error);
     })
