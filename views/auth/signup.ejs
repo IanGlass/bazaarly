@@ -10,15 +10,15 @@
         <form class="login-form" action="/signup" method="POST">
             <div class="form-control">
                 <label for="email">E-Mail</label>
-                <input class="<%= errorMessage.find(error => error.param === 'email') ? 'invalid' : '' %>" type="email" name="email" id="email" value="<%= oldInput.email %>">
+                <input class="<%= errorMessage.find(error => error.param === 'email') ? 'invalid' : '' %>" type="email" name="email" id="email" value="<%= oldInput ? oldInput.email : null %>">
             </div>
             <div class="form-control">
                 <label for="password">Password</label>
-                <input class="<%= errorMessage.find(error => error.param === 'password') ? 'invalid' : '' %>" type="password" name="password" id="password" value="<%= oldInput.password %>">
+                <input class="<%= errorMessage.find(error => error.param === 'password') ? 'invalid' : '' %>" type="password" name="password" id="password" value="<%= oldInput ? oldInput.password : null %>">
             </div>
             <div class="form-control">
                 <label for="confirmPassword">Confirm Password</label>
-                <input class="<%= errorMessage.find(error => error.param === 'confirmPassword') ? 'invalid' : '' %>" type="password" name="confirmPassword" id="confirmPassword" value="<%= oldInput.confirmPassword %>">
+                <input class="<%= errorMessage.find(error => error.param === 'confirmPassword') ? 'invalid' : '' %>" type="password" name="confirmPassword" id="confirmPassword" value="<%= oldInput ? oldInput.confirmPassword : null %>">
             </div>
             <button class="btn" type="submit">Signup</button>
             <input type="hidden" name="_csrf" value="<%= csrfToken %>">

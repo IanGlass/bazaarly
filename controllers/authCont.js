@@ -12,10 +12,7 @@ exports.getLogin = (req, res, next) => {
     pageTitle: 'Login',
     successMessage: req.flash('success'),
     errorMessage: req.flash('error'),
-    oldInput: {
-      email: null,
-      password: null,
-    }
+    oldInput: req.flash('oldInput')[0],
   });
 }
 
@@ -23,43 +20,34 @@ exports.getLogin = (req, res, next) => {
 exports.postLogin = (req, res, next) => {
   // Catch user input errors
   if (!validationResult(req).isEmpty()) {
-    return res.status(422).render('auth/login', {
-      pageTitle: 'Login',
-      successMessage: req.flash('success'),
-      errorMessage: validationResult(req).errors,
-      oldInput: {
-        email: req.body.email,
-        password: req.body.password,
-      }
+    req.flash('error', validationResult(req).errors);
+    req.flash('oldInput', {
+      email: req.body.email,
+      password: req.body.password,
     });
+    return res.status(422).redirect('/login');
   }
   User
     .findOne({ email: req.body.email })
     .then(user => {
       if (!user) {
-        return res.status(422).render('auth/login', {
-          pageTitle: 'Login',
-          successMessage: req.flash('success'),
-          errorMessage: [{ msg:'Invalid email or password' }],
-          oldInput: {
-            email: req.body.email,
-            password: req.body.password,
-          }
+        req.flash('error', { msg:'Invalid email or password' });
+        req.flash('oldInput', {
+          email: req.body.email,
+          password: req.body.password,
         });
+        return res.status(422).redirect('/login');
       }
       bcrypt
         .compare(req.body.password, user.password)
         .then(matched => {
           if (!matched) {
-            return res.status(422).render('auth/login', {
-              pageTitle: 'Login',
-              successMessage: req.flash('success'),
-              errorMessage: [{ msg:'Invalid email or password' }],
-              oldInput: {
-                email: req.body.email,
-                password: req.body.password,
-              }
+            req.flash('error', { msg:'Invalid email or password' });
+            req.flash('oldInput', {
+              email: req.body.email,
+              password: req.body.password,
             });
+            return res.status(422).redirect('/login');
           }
           req.session.user = user;
           req.session.authenticated = true;
@@ -70,9 +58,12 @@ exports.postLogin = (req, res, next) => {
           })
         })
         .catch(error => {
-          console.log(error);
-          req.flash('error', 'An unknown error occurred');
-          res.redirect('/login');
+          req.flash('error', { msg:'An unknown error occurred' });
+          req.flash('oldInput', {
+            email: req.body.email,
+            password: req.body.password,
+          });
+          return res.status(422).redirect('/login');
         })
     })
     .catch(error => console.log(error))
@@ -92,43 +83,33 @@ exports.getSignup = (req, res, next) => {
     authenticated: false,
     successMessage: req.flash('success'),
     errorMessage: req.flash('error'),
-    oldInput: {
-      email: req.body.email,
-      password: req.body.password,
-      confirmPassword: req.body.confirmPassword,
-    },
+    oldInput: req.flash('oldInput')[0],
   });
 };
 
 exports.postSignup = (req, res, next) => {
   // Catch user input errors
   if (!validationResult(req).isEmpty()) {
-    return res.status(422).render('auth/signup', {
-      pageTitle: 'Signup',
-      successMessage: req.flash('success'),
-      errorMessage: validationResult(req).errors,
-      oldInput: {
-        email: req.body.email,
-        password: req.body.password,
-        confirmPassword: req.body.confirmPassword,
-      },
+    req.flash('error', validationResult(req).errors);
+    req.flash('oldInput', {
+      email: req.body.email,
+      password: req.body.password,
+      confirmPassword: req.body.confirmPassword,
     });
+    return res.status(422).redirect('/signup');
   }
   // Check for duplicate email addresses first
   User
     .findOne({ email: req.body.email })
     .then(existingUser => {
       if (existingUser) {
-        return res.status(422).render('auth/signup', {
-          pageTitle: 'Signup',
-          successMessage: req.flash('success'),
-          errorMessage: [{ msg: 'E-Mail address already exists'}],
-          oldInput: {
-            email: req.body.email,
-            password: req.body.password,
-            confirmPassword: req.body.confirmPassword,
-          },
+        req.flash('error', { msg: 'E-Mail address already exists' });
+        req.flash('oldInput', {
+          email: req.body.email,
+          password: req.body.password,
+          confirmPassword: req.body.confirmPassword,
         });
+        return res.status(422).redirect('/signup');
       }
       bcrypt
         .hash(req.body.password, 12)
@@ -167,26 +148,27 @@ exports.postReset = (req, res, next) => {
   crypto.randomBytes(32, (error, buffer) => {
     if (error) {
       console.log(error);
-      return res.redirect('/reset');
+      req.flash('error', { msg: 'Something went wrong' });
+      req.flash('oldInput', {
+        email: req.body.email,
+      });
+      return res.status(422).redirect('/reset');
     }
     const token = buffer.toString('hex');
     User
       .findOne({ email: req.body.email })
       .then(user => {
         if (!user) {
-          return res.status(422).render('auth/reset', {
-            pageTitle: 'Signup',
-            successMessage: req.flash('success'),
-            errorMessage: [{ msg: 'No account with that E-Mail found.'}],
-            oldInput: {
-              email: req.body.email,
-            },
+          req.flash('error', { msg: 'No account with that E-Mail found.' });
+          req.flash('oldInput', {
+            email: req.body.email,
           });
+          return res.status(422).redirect('/reset');
         }
         user.resetToken = token;
         user.resetTokenExpiration = Date.now() + 60*60*1000;
         user.save()
-          .then(result => {
+          .then(() => {
             sgMail.send({
               to: req.body.email,
               from: 'shop@node-complete.com',

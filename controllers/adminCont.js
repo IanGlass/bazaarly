@@ -5,15 +5,18 @@ exports.getAddProduct = (req, res, next) => {
   res.render('admin/edit-product', {
     pageTitle: 'Add Product',
     editMode: false,
+    successMessage: req.flash('success'),
     errorMessage: req.flash('error'),
   });
 }
 
 exports.postAddProduct = (req, res, next) => {
   if (!validationResult(req).isEmpty()) {
-    res.status(422).render('admin/edit-product', {
+    return res.status(422).render('admin/edit-product', {
       pageTitle: 'Add Product',
       editMode: false,
+      successMessage: req.flash('success'),
+      errorMessage: validationResult(req).errors,
       product: {
         title: req.body.title,
         imageUrl: req.body.imageUrl,

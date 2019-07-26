@@ -6,14 +6,13 @@ const isAuth = require('../middleware/is-auth');
 
 const router = express.Router();
 
-// GET /admin/add-product
 router.get('/add-product', isAuth, adminCont.getAddProduct);
 
 router.get('/products', isAuth, adminCont.getProducts);
 
 router.post('/add-product', isAuth,
 body('title')
-  .isAlphanumeric()
+  .isString()
   .isLength({ min: 3 })
   .trim(),
 body('imageUrl')
