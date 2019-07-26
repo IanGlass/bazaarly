@@ -118,7 +118,6 @@ exports.postSignup = (req, res, next) => {
   User
     .findOne({ email: req.body.email })
     .then(existingUser => {
-      
       if (existingUser) {
         return res.status(422).render('auth/signup', {
           pageTitle: 'Signup',
@@ -188,15 +187,15 @@ exports.postReset = (req, res, next) => {
         user.resetTokenExpiration = Date.now() + 60*60*1000;
         user.save()
           .then(result => {
-            // sgMail.send({
-            //   to: req.body.email,
-            //   from: 'shop@node-complete.com',
-            //   subject: 'Password Reset',
-            //   html: `
-            //     <p>You requested a password reset</p>
-            //     <p>Click this <a href="http://${req.get('host')}/new-password/${token}">link</a> to set a new password</p>
-            //   `
-            // });
+            sgMail.send({
+              to: req.body.email,
+              from: 'shop@node-complete.com',
+              subject: 'Password Reset',
+              html: `
+                <p>You requested a password reset</p>
+                <p>Click this <a href="http://${req.get('host')}/new-password/${token}">link</a> to set a new password</p>
+              `
+            });
             req.flash('success', 'Password reset link sent, please check your email');
             return res.redirect('/reset');
           })
