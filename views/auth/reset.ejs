@@ -11,17 +11,12 @@
         <form action="/reset" method="POST" class="login-form">
             <div class="form-control">
                 <label for="email">E-Mail</label>
-                <input type="email" name="email" id="email">
+                <input  class="<%= errorMessage.find(error => error.param === 'password') ? 'invalid' : '' %>" type="email" name="email" id="email" value="<%= oldInput.email %>">
             </div>
 
             <button type="submit" class="btn">Reset Password</button>
-            <% if (errorMessage.length) { %>
-                <div class="user-message user-message--error"><%= errorMessage %></div>
-            <% } %>
-            <% if (successMessage.length) { %>
-                <div class="user-message"><%= successMessage %></div>
-            <% } %>
             <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <%- include('../components/validation.ejs') %>
         </form>
     </main>
 

@@ -1,0 +1,8 @@
+<% if (errorMessage.length) { %>
+    <% errorMessage.forEach(function(error) { %>
+        <div class="user-message user-message--error"><%= error.msg %></div>
+    <% }) %>
+<% } %>
+<% if (successMessage.length) { %>
+    <div class="user-message"><%= successMessage %></div>
+<% } %>

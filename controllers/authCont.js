@@ -26,7 +26,7 @@ exports.postLogin = (req, res, next) => {
     return res.status(422).render('auth/login', {
       pageTitle: 'Login',
       successMessage: req.flash('success'),
-      errorMessage: validationResult(req).errors.map(error => error.msg),
+      errorMessage: validationResult(req).errors,
       oldInput: {
         email: req.body.email,
         password: req.body.password,
@@ -37,15 +37,29 @@ exports.postLogin = (req, res, next) => {
     .findOne({ email: req.body.email })
     .then(user => {
       if (!user) {
-        req.flash('error', 'Invalid email or password');
-        return res.redirect('/login');
+        return res.status(422).render('auth/login', {
+          pageTitle: 'Login',
+          successMessage: req.flash('success'),
+          errorMessage: [{ msg:'Invalid email or password' }],
+          oldInput: {
+            email: req.body.email,
+            password: req.body.password,
+          }
+        });
       }
       bcrypt
         .compare(req.body.password, user.password)
         .then(matched => {
           if (!matched) {
-            req.flash('error', 'Invalid email or password');
-            return res.redirect('/login');
+            return res.status(422).render('auth/login', {
+              pageTitle: 'Login',
+              successMessage: req.flash('success'),
+              errorMessage: [{ msg:'Invalid email or password' }],
+              oldInput: {
+                email: req.body.email,
+                password: req.body.password,
+              }
+            });
           }
           req.session.user = user;
           req.session.authenticated = true;
@@ -76,6 +90,7 @@ exports.getSignup = (req, res, next) => {
   res.render('auth/signup', {
     pageTitle: 'Signup',
     authenticated: false,
+    successMessage: req.flash('success'),
     errorMessage: req.flash('error'),
     oldInput: {
       email: req.body.email,
@@ -91,7 +106,7 @@ exports.postSignup = (req, res, next) => {
     return res.status(422).render('auth/signup', {
       pageTitle: 'Signup',
       successMessage: req.flash('success'),
-      errorMessage: validationResult(req).errors.map(error => error.msg),
+      errorMessage: validationResult(req).errors,
       oldInput: {
         email: req.body.email,
         password: req.body.password,
@@ -103,9 +118,18 @@ exports.postSignup = (req, res, next) => {
   User
     .findOne({ email: req.body.email })
     .then(existingUser => {
+      
       if (existingUser) {
-        req.flash('error', 'E-Mail address already exists');
-        return res.redirect('/signup');
+        return res.status(422).render('auth/signup', {
+          pageTitle: 'Signup',
+          successMessage: req.flash('success'),
+          errorMessage: [{ msg: 'E-Mail address already exists'}],
+          oldInput: {
+            email: req.body.email,
+            password: req.body.password,
+            confirmPassword: req.body.confirmPassword,
+          },
+        });
       }
       bcrypt
         .hash(req.body.password, 12)
@@ -151,25 +175,31 @@ exports.postReset = (req, res, next) => {
       .findOne({ email: req.body.email })
       .then(user => {
         if (!user) {
-          req.flash('error', 'No account with that E-Mail found.')
-          return res.redirect('/reset');
+          return res.status(422).render('auth/reset', {
+            pageTitle: 'Signup',
+            successMessage: req.flash('success'),
+            errorMessage: [{ msg: 'No account with that E-Mail found.'}],
+            oldInput: {
+              email: req.body.email,
+            },
+          });
         }
         user.resetToken = token;
         user.resetTokenExpiration = Date.now() + 60*60*1000;
-        return user.save()
-      })
-      .then(result => {
-        sgMail.send({
-          to: req.body.email,
-          from: 'shop@node-complete.com',
-          subject: 'Password Reset',
-          html: `
-            <p>You requested a password reset</p>
-            <p>Click this <a href="http://${req.get('host')}/new-password/${token}">link</a> to set a new password</p>
-          `
-        });
-        req.flash('success', 'Password reset link sent, please check your email');
-        return res.redirect('/reset');
+        user.save()
+          .then(result => {
+            // sgMail.send({
+            //   to: req.body.email,
+            //   from: 'shop@node-complete.com',
+            //   subject: 'Password Reset',
+            //   html: `
+            //     <p>You requested a password reset</p>
+            //     <p>Click this <a href="http://${req.get('host')}/new-password/${token}">link</a> to set a new password</p>
+            //   `
+            // });
+            req.flash('success', 'Password reset link sent, please check your email');
+            return res.redirect('/reset');
+          })
       })
       .catch(error => console.log(error))
   });

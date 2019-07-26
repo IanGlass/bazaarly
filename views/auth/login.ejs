@@ -11,21 +11,16 @@
         <form action="/login" method="POST" class="login-form">
             <div class="form-control">
                 <label for="email">E-Mail</label>
-                <input type="email" name="email" id="email" value="<%= oldInput.email %>">
+                <input class="<%= errorMessage.find(error => error.param === 'email') ? 'invalid' : '' %>" type="email" name="email" id="email" value="<%= oldInput.email %>">
             </div>
             <div class="form-control">
                 <label for="password">Password</label>
-                <input type="password" name="password" id="password" value="<%= oldInput.password %>">
+                <input class="<%= errorMessage.find(error => error.param === 'password') ? 'invalid' : '' %>" type="password" name="password" id="password" value="<%= oldInput.password %>">
             </div>
 
             <button type="submit" class="btn">Login</button>
-            <% if (errorMessage.length) { %>
-                <div class="user-message user-message--error"><%= errorMessage %></div>
-            <% } %>
-            <% if (successMessage.length) { %>
-                <div class="user-message"><%= successMessage %></div>
-            <% } %>
             <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <%- include('../components/validation.ejs') %>
         </form>
         <div class="centered">
             <a href="/reset">Reset Password</a>

@@ -1,4 +1,5 @@
 const Product = require('../models/Product');
+const { validationResult } = require('express-validator/check');
 
 exports.getAddProduct = (req, res, next) => {
   res.render('admin/edit-product', {
@@ -9,6 +10,18 @@ exports.getAddProduct = (req, res, next) => {
 }
 
 exports.postAddProduct = (req, res, next) => {
+  if (!validationResult(req).isEmpty()) {
+    res.status(422).render('admin/edit-product', {
+      pageTitle: 'Add Product',
+      editMode: false,
+      product: {
+        title: req.body.title,
+        imageUrl: req.body.imageUrl,
+        price: req.body.price,
+        description: req.body.description,
+      }
+    })
+  }
   const product = new Product({
     title:        req.body.title,
     price:        req.body.price,
