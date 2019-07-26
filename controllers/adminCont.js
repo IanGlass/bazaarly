@@ -4,26 +4,22 @@ const { validationResult } = require('express-validator/check');
 exports.getAddProduct = (req, res, next) => {
   res.render('admin/edit-product', {
     pageTitle: 'Add Product',
-    editMode: false,
     successMessage: req.flash('success'),
     errorMessage: req.flash('error'),
+    product: req.flash('product')[0],
   });
 }
 
 exports.postAddProduct = (req, res, next) => {
   if (!validationResult(req).isEmpty()) {
-    return res.status(422).render('admin/edit-product', {
-      pageTitle: 'Add Product',
-      editMode: false,
-      successMessage: req.flash('success'),
-      errorMessage: validationResult(req).errors,
-      product: {
-        title: req.body.title,
-        imageUrl: req.body.imageUrl,
-        price: req.body.price,
-        description: req.body.description,
-      }
-    })
+    req.flash('error', validationResult(req).errors);
+    req.flash('product', {
+      title: req.body.title,
+      imageUrl: req.body.imageUrl,
+      price: req.body.price,
+      description: req.body.description,
+    });
+    return res.status(422).redirect('/admin/add-product');
   }
   const product = new Product({
     title:        req.body.title,
@@ -65,15 +61,25 @@ exports.getEditProduct = (req, res, next) => {
 
       res.render('admin/edit-product', {
         pageTitle: 'Edit Product',
-        editMode: true,
-        product: product,
+        successMessage: req.flash('success'),
         errorMessage: req.flash('error'),
+        product: req.flash('product')[0] || product,
       });
     })
     .catch(error => console.log(error))
 }
 
 exports.postEditProduct = (req, res, next) => {
+  if (!validationResult(req).isEmpty()) {
+    req.flash('error', validationResult(req).errors);
+    req.flash('product', {
+      title: req.body.title,
+      imageUrl: req.body.imageUrl,
+      price: req.body.price,
+      description: req.body.description,
+    });
+    return res.status(422).redirect(`/admin/edit-product/${req.body.productId}`);
+  }
   Product
     .findOne({ _id: req.body.productId, user: req.session.user._id })
     .then(product => {
