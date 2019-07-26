@@ -1,6 +1,7 @@
 const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 const sgMail = require('@sendgrid/mail');
+const { validationResult } = require('express-validator/check')
 
 sgMail.setApiKey(process.env.SG_API_KEY);
 
@@ -64,6 +65,14 @@ exports.getSignup = (req, res, next) => {
 };
 
 exports.postSignup = (req, res, next) => {
+  console.log(validationResult(req));
+  // Catch user input errors
+  if (!validationResult(req).isEmpty()) {
+    return res.status(422).render('auth/signup', {
+      pageTitle: 'Signup',
+      errorMessage: validationResult(req).errors.map(error => error.msg)
+    })
+  }
   // Check for duplicate email addresses first
   User
     .findOne({ email: req.body.email })

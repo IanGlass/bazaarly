@@ -22,7 +22,9 @@
             </div>
             <button class="btn" type="submit">Signup</button>
             <% if (errorMessage.length) { %>
-                <div class="user-message user-message--error"><%= errorMessage %></div>
+                <% errorMessage.forEach(function(error) { %>
+                    <div class="user-message user-message--error"><%= error %></div>
+                <% }) %>
             <% } %>
             <input type="hidden" name="_csrf" value="<%= csrfToken %>">
         </form>
