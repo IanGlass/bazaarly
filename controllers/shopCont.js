@@ -134,14 +134,11 @@ exports.getInvoice = (req, res, next) => {
       }
       const invoiceName = 'invoice-' + req.params.orderId + '.pdf';
       const invoicePath = path.join('data', 'invoices', invoiceName);
-      fs.readFile(invoicePath, (error, data) => {
-        if (error) {
-          return next(error);
-        }
-        res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader('Content-Disposition', 'inline; filename="' + invoiceName + '"');
-        res.send(data);
-      })
+      // Stream the file to bypass memory overhead of loading entire file
+      const stream = fs.createReadStream(invoicePath);
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', 'inline; filename="' + invoiceName + '"');
+      stream.pipe(res);
     })
     .catch(error => {
       error.statusCode = 500;
