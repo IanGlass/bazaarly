@@ -57,10 +57,13 @@ app.use((req, res, next) => {
   }
   User.findById(req.session.user._id)
     .then(user => {
+      if (!user) {
+        return next();
+      }
       req.user = user;
       next();
     })
-    .catch(error => console.log(error))
+    .catch(error => { throw new Error(error) })
 });
 
 // Add session authentication, csrf token and request path to all views
@@ -75,8 +78,17 @@ app.use('/admin', adminData.routes);
 app.use(shopRoutes);
 app.use(authRoutes);
 
+// Serve 500 error page
+app.get('/500', errorCont.error500);
+
 // Catch any path not routed to a middleware and serve a 404 page, THIS INVOCATION OF app.use MUST COME LAST
 app.use(errorCont.error404);
+
+// Catch server errors thrown in application
+app.use((error, req, res, next) => {
+  console.log(error);
+  res.status(error.statusCode).redirect(`/${error.statusCode}`);
+})
 
 // Connected to DB, now spin up server and listen for requests
 mongoose.connect(MONGODB_URI, {useNewUrlParser: true})

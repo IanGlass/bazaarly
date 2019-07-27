@@ -5,3 +5,10 @@ exports.error404 = (req, res, next) => {
     path: req.path,
   });
 }
+
+exports.error500 = (req, res, next) => {
+  res.status(500).render('500', {
+    pageTitle: `Page Not Found`,
+    path: req.path,
+  });
+}

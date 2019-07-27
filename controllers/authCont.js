@@ -66,7 +66,10 @@ exports.postLogin = (req, res, next) => {
           return res.status(422).redirect('/login');
         })
     })
-    .catch(error => console.log(error))
+    .catch(error => {
+      error.statusCode = 500;
+      return next(error);
+    })
 }
 
 // Destroying the session containing authentication data effectively logs user out
@@ -133,7 +136,10 @@ exports.postSignup = (req, res, next) => {
           res.redirect('/login');
         })
     })
-    .catch(error => console.log(error))
+    .catch(error => {
+      error.statusCode = 500;
+      return next(error);
+    })
 }
 
 exports.getReset = (req, res, next) => {
@@ -183,7 +189,10 @@ exports.postReset = (req, res, next) => {
             return res.redirect('/reset');
           })
       })
-      .catch(error => console.log(error))
+      .catch(error => {
+      error.statusCode = 500;
+      return next(error);
+    })
   });
 }
 
@@ -206,7 +215,10 @@ exports.getNewPassword = (req, res, next) => {
         resetToken: req.params.resetToken
       });
     })
-    .catch(error => console.log(error))
+    .catch(error => {
+      error.statusCode = 500;
+      return next(error);
+    })
 }
 
 exports.postNewPassword = (req, res, next) => {
@@ -232,5 +244,8 @@ exports.postNewPassword = (req, res, next) => {
           res.redirect('/login');
         })
     })
-    .catch(error => console.log(error))
+    .catch(error => {
+      error.statusCode = 500;
+      return next(error);
+    })
 }

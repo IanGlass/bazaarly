@@ -9,7 +9,10 @@ exports.getIndex = (req, res, next) => {
         prods: products,
       });
     })
-    .catch(error => console.log(error))
+    .catch(error => {
+      error.statusCode = 500;
+      return next(error);
+    })
 };
 
 exports.getProducts = (req, res, next) => {
@@ -21,7 +24,10 @@ exports.getProducts = (req, res, next) => {
         prods: products,
       });
     })
-    .catch(error => console.log(error))
+    .catch(error => {
+      error.statusCode = 500;
+      return next(error);
+    })
 }
 
 exports.getProduct = (req, res, next) => {
@@ -32,7 +38,10 @@ exports.getProduct = (req, res, next) => {
         product: product,
       });
     })
-    .catch(error => console.log(error))
+    .catch(error => {
+      error.statusCode = 500;
+      return next(error);
+    })
 }
 
 exports.getCart = (req, res, next) => {
@@ -45,7 +54,10 @@ exports.getCart = (req, res, next) => {
         cartProducts: user.cart.items,
       });
     })
-    .catch(error => console.log(error))
+    .catch(error => {
+      error.statusCode = 500;
+      return next(error);
+    })
 }
 
 exports.postCart = (req, res, next) => {
@@ -56,7 +68,10 @@ exports.postCart = (req, res, next) => {
     .then(() => {
       res.redirect('/cart');
     })
-  .catch(error => console.log(error))
+  .catch(error => {
+      error.statusCode = 500;
+      return next(error);
+    })
 }
 
 exports.postCartDeleteProduct = (req, res, next) => {
@@ -65,7 +80,10 @@ exports.postCartDeleteProduct = (req, res, next) => {
     .then(() => {
       res.redirect('/cart');
     })
-  .catch(error => console.log(error))
+  .catch(error => {
+      error.statusCode = 500;
+      return next(error);
+    })
 }
 
 exports.postOrder = (req, res, next) => {
@@ -84,7 +102,10 @@ exports.postOrder = (req, res, next) => {
     .then(() => {
       res.redirect('/orders')
     })
-    .catch(error => console.log(error))
+    .catch(error => {
+      error.statusCode = 500;
+      return next(error);
+    })
 }
 
 exports.getOrders = (req, res, next) => {
@@ -95,5 +116,8 @@ exports.getOrders = (req, res, next) => {
         orders: orders,
       });
     })
-  .catch(error => console.log(error))
+  .catch(error => {
+      error.statusCode = 500;
+      return next(error);
+    })
 }

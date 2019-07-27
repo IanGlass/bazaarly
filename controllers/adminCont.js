@@ -34,9 +34,8 @@ exports.postAddProduct = (req, res, next) => {
       res.redirect('/admin/products');
     })
     .catch((error) => {
-      req.flash('error', [{ msg: 'Missing product information' }]);
-      res.redirect('/admin/add-product');
-      console.log(error);
+      error.statusCode = 500;
+      return next(error);
     })
 }
 
@@ -65,7 +64,10 @@ exports.getEditProduct = (req, res, next) => {
         product: req.flash('product')[0] || product,
       });
     })
-    .catch(error => console.log(error))
+    .catch(error => {
+      error.statusCode = 500;
+      return next(error);
+    })
 }
 
 exports.postEditProduct = (req, res, next) => {
@@ -95,8 +97,8 @@ exports.postEditProduct = (req, res, next) => {
         })
     })
     .catch(error => {
-      console.log(error);
-      res.redirect('/');
+      error.statusCode = 500;
+      return next(error);
     })
   }
 
@@ -106,6 +108,9 @@ exports.postDeleteProduct = (req, res, next) => {
     .then(() => {
       res.redirect('/admin/products')
     })
-    .catch(error => console.log(error))
+    .catch(error => {
+      error.statusCode = 500;
+      return next(error);
+    })
 }
 
