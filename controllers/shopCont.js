@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const PDFDocument =  require('pdfkit');
 
 const Product = require('../models/Product');
 const Order = require('../models/Order');
@@ -132,13 +133,28 @@ exports.getInvoice = (req, res, next) => {
       if (order.user.toString() !== req.session.user._id.toString()) {
         return;
       }
-      const invoiceName = 'invoice-' + req.params.orderId + '.pdf';
-      const invoicePath = path.join('data', 'invoices', invoiceName);
-      // Stream the file to bypass memory overhead of loading entire file
-      const stream = fs.createReadStream(invoicePath);
+
       res.setHeader('Content-Type', 'application/pdf');
-      res.setHeader('Content-Disposition', 'inline; filename="' + invoiceName + '"');
-      stream.pipe(res);
+      res.setHeader('Content-Disposition', 'inline; filename=invoice-"' + req.params.orderId + '.pdf"');
+
+      const PDF = new PDFDocument();
+      // Write the created PDF to response read stream to bypass memory overhead of loading entire file
+      PDF.pipe(res);
+      PDF.fontSize(26).text('Invoice', {
+        underline: true
+      });
+
+      PDF.text('------------------');
+
+      let totalPrice = 0;
+      order.products.forEach(product => {
+        totalPrice += product.product.price
+        PDF.fontSize(12).text(`${product.product.title} - ${product.quantity} x $${product.product.price}`);
+      })
+      PDF.fontSize(20).text(`Total Price: $${totalPrice}`);
+
+      PDF.end();
+
     })
     .catch(error => {
       error.statusCode = 500;

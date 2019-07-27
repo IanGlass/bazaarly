@@ -9,11 +9,11 @@
             <ul class="orders">
                 <% orders.forEach(order => { %>
                     <li class="orders__item">
-                        <h1># <%= order.id %></h1>
+                        <h1># <%= order.id %> - <a href="/invoice/<%= order.id %>">Invoice</a></h1>
                         <ul class="orders__products">
                             <% order.products.forEach(productOrder => { %>
                                 <li class="orders__products-item">
-                                    <%= productOrder.product.title %> (<%= productOrder.quantity %>) - <a href="/invoice/<%= order.id %>">Invoice</a>
+                                    <%= productOrder.product.title %> (<%= productOrder.quantity %>)
                                 </li>
                             <% }) %>
                         </ul>
