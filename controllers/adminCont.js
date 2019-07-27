@@ -1,5 +1,7 @@
-const Product = require('../models/Product');
 const { validationResult } = require('express-validator/check');
+const { deleteFile } = require('../helpers/file');
+
+const Product = require('../models/Product');
 
 exports.getAddProduct = (req, res, next) => {
   res.render('admin/edit-product', {
@@ -94,6 +96,11 @@ exports.postEditProduct = (req, res, next) => {
   Product
     .findOne({ _id: req.body.productId, user: req.session.user._id })
     .then(product => {
+      // Remove old image file
+      if (req.file) {
+        console.log
+        deleteFile(product.imageUrl);
+      }
       // Add the new value of body to the fetched product
       product.title = req.body.title;
       product.price = req.body.price;
@@ -114,6 +121,15 @@ exports.postEditProduct = (req, res, next) => {
   }
 
 exports.postDeleteProduct = (req, res, next) => {
+  Product
+    .findById(req.body.productId)
+    .then((product) => {
+      deleteFile(product.imageUrl);
+    })
+    .catch(error => {
+      error.statusCode = 500;
+      return next(error);
+    })
   Product
     .deleteOne({ _id: req.body.productId, user: req.session.user._id })
     .then(() => {
