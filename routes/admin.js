@@ -15,14 +15,12 @@ body('title')
   .isString()
   .isLength({ min: 3 })
   .trim(),
-body('imageUrl')
-  .isURL(),
 body('price')
   .isFloat()
   .isLength({ min: 3 })
   .trim(),
 body('description')
-  .isLength({ min: 10 })
+  .isLength({ min: 5 })
   .trim(),
 adminCont.postAddProduct);
 
@@ -34,14 +32,12 @@ body('title')
   .isAlphanumeric()
   .isLength({ min: 3 })
   .trim(),
-body('imageUrl')
-  .isURL(),
 body('price')
   .isFloat()
   .isLength({ min: 3 })
   .trim(),
 body('description')
-  .isLength({ min: 10 })
+  .isLength({ min: 5 })
   .trim(),
 adminCont.postEditProduct);
 

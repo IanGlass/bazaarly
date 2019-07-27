@@ -1,5 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const multer = require('multer');
 const path = require('path');
 const mongoose = require('mongoose');
 const session = require('express-session');
@@ -34,8 +35,26 @@ app.set('views', 'views');
 // Automatically parse any incoming data into res.body
 app.use(bodyParser.urlencoded({ extended: false }));
 
-// Statically serve public resources including the css stylesheet
-app.use(express.static(path.join(__dirname, 'public/')));
+// Parse file data into the req.file and save to /images if png, jpg or jpeg only
+const fileStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'data/images');
+  },
+  filename: (req, file, cb) => {
+    cb(null, new Date().getTime() + '-' + file.originalname);
+  }
+});
+const fileFilter = (req, file, cb) => {
+  if (file.mimetype === 'image/png' || file.mimetype === 'image/jpg' || file.mimetype === 'image/jpeg') {
+    cb(null, true);
+  }
+  cb(null, false);
+}
+app.use(multer({ storage: fileStorage, fileFilter: fileFilter }).single('imageUrl'));
+
+// Statically serve public resources including the css stylesheet and product images
+app.use(express.static(path.join(__dirname, 'public')));
+app.use('/data/images', express.static(path.join(__dirname, 'data/images')));
 
 // Add session middleware to allow multiple requests from the same connection without re-authentication
 app.use(session({

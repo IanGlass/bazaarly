@@ -11,11 +11,19 @@ exports.getAddProduct = (req, res, next) => {
 }
 
 exports.postAddProduct = (req, res, next) => {
+  if (!req.file) {
+    req.flash('error', [{ param: 'imageUrl', msg: 'Invalid image' }]);
+    req.flash('product', {
+      title: req.body.title,
+      price: req.body.price,
+      description: req.body.description,
+    });
+    return res.status(422).redirect('/admin/add-product');
+  }
   if (!validationResult(req).isEmpty()) {
     req.flash('error', validationResult(req).errors);
     req.flash('product', {
       title: req.body.title,
-      imageUrl: req.body.imageUrl,
       price: req.body.price,
       description: req.body.description,
     });
@@ -25,7 +33,7 @@ exports.postAddProduct = (req, res, next) => {
     title:        req.body.title,
     price:        req.body.price,
     description:  req.body.description,
-    imageUrl:     req.body.imageUrl,
+    imageUrl:     req.file.path,
     user:         req.session.user._id,
   })
   product
@@ -40,7 +48,8 @@ exports.postAddProduct = (req, res, next) => {
 }
 
 exports.getProducts = (req, res, next) => {
-  Product.find({ user: req.session.user._id })
+  Product
+    .find({ user: req.session.user._id })
     .then((products) => {
       res.render('admin/products', {
         pageTitle: 'Admin Products',
@@ -52,7 +61,8 @@ exports.getProducts = (req, res, next) => {
 
 // add-product and edit-product share the same view
 exports.getEditProduct = (req, res, next) => {
-  Product.findById(req.params.productId)
+  Product
+    .findById(req.params.productId)
     .then(product => {
       if (!product) {
         return res.redirect('/');
@@ -87,7 +97,8 @@ exports.postEditProduct = (req, res, next) => {
       // Add the new value of body to the fetched product
       product.title = req.body.title;
       product.price = req.body.price;
-      product.imageUrl = req.body.imageUrl;
+      // Only update imageUrl if a path was provided
+      product.imageUrl = req.file ? req.file.path : product.imageUrl;
       product.description = req.body.description;
       // Update the old product
       product
