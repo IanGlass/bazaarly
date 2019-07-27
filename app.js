@@ -50,6 +50,17 @@ app.use(csrfProtection);
 // Used to res.redirect error messages back to client without persistent storage in session
 app.use(flash());
 
+// Add session authentication, csrf token and request path to all views
+app.use((req, res, next) => {
+  res.locals.path = req.originalUrl;
+  res.locals.authenticated = req.session.authenticated;
+  res.locals.csrfToken = req.csrfToken();
+  next();
+})
+
+// Serve 500 error page
+app.get('/500', errorCont.error500);
+
 // Fetch the user object using our mongoose user model and session stored user Id so all model methods are available for this request
 app.use((req, res, next) => {
   if (!req.session.user) {
@@ -63,23 +74,15 @@ app.use((req, res, next) => {
       req.user = user;
       next();
     })
-    .catch(error => { throw new Error(error) })
+    .catch(error => {
+      error.statusCode = 500;
+      return next(error);
+    })
 });
-
-// Add session authentication, csrf token and request path to all views
-app.use((req, res, next) => {
-  res.locals.path = req.originalUrl;
-  res.locals.authenticated = req.session.authenticated;
-  res.locals.csrfToken = req.csrfToken();
-  next();
-})
 
 app.use('/admin', adminData.routes);
 app.use(shopRoutes);
 app.use(authRoutes);
-
-// Serve 500 error page
-app.get('/500', errorCont.error500);
 
 // Catch any path not routed to a middleware and serve a 404 page, THIS INVOCATION OF app.use MUST COME LAST
 app.use(errorCont.error404);
