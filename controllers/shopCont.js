@@ -126,14 +126,25 @@ exports.getOrders = (req, res, next) => {
 }
 
 exports.getInvoice = (req, res, next) => {
-  const invoiceName = 'invoice-' + req.params.invoiceId + '.pdf';
-  const invoicePath = path.join('data', 'invoices', invoiceName);
-  fs.readFile(invoicePath, (error, data) => {
-    if (error) {
+  // Should the requesting user be able to see the invoice?
+  Order.findById({ _id: req.params.orderId })
+    .then(order => {
+      if (order.user.toString() !== req.session.user._id.toString()) {
+        return;
+      }
+      const invoiceName = 'invoice-' + req.params.orderId + '.pdf';
+      const invoicePath = path.join('data', 'invoices', invoiceName);
+      fs.readFile(invoicePath, (error, data) => {
+        if (error) {
+          return next(error);
+        }
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', 'inline; filename="' + invoiceName + '"');
+        res.send(data);
+      })
+    })
+    .catch(error => {
+      error.statusCode = 500;
       return next(error);
-    }
-    res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', 'inline; filename="' + invoiceName + '"');
-    res.send(data);
-  })
+    })
 }

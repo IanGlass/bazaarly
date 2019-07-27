@@ -20,7 +20,7 @@ router.post('/create-order', isAuth, shopCont.postOrder);
 
 router.get('/orders', isAuth, shopCont.getOrders);
 
-router.get('/invoice/:invoiceId', isAuth, shopCont.getInvoice);
+router.get('/invoice/:orderId', isAuth, shopCont.getInvoice);
 
 // Express will now ignore productId but this middleware will get hit if it does not hit anything before
 router.get('/products/:productId', shopCont.getProduct);
