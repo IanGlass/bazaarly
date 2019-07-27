@@ -31,7 +31,7 @@ exports.postAddProduct = (req, res, next) => {
   product
     .save()
     .then(() => {
-      res.redirect('/admin/products');
+      res.status(201).redirect('/admin/products');
     })
     .catch((error) => {
       error.statusCode = 500;

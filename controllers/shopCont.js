@@ -66,7 +66,7 @@ exports.postCart = (req, res, next) => {
       return req.user.addToCart(product);
     })
     .then(() => {
-      res.redirect('/cart');
+      res.status(201).redirect('/cart');
     })
   .catch(error => {
       error.statusCode = 500;
@@ -100,7 +100,7 @@ exports.postOrder = (req, res, next) => {
       return req.user.clearCart();
     })
     .then(() => {
-      res.redirect('/orders')
+      res.status(201).redirect('/orders')
     })
     .catch(error => {
       error.statusCode = 500;

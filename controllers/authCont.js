@@ -133,7 +133,7 @@ exports.postSignup = (req, res, next) => {
             text: 'and easy to do anywhere, even with Node.js',
             html: '<h1>You successfully signed up</h1>'
           });
-          res.redirect('/login');
+          res.status(201).redirect('/login');
         })
     })
     .catch(error => {
