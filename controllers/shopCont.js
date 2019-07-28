@@ -1,17 +1,32 @@
-const fs = require('fs');
-const path = require('path');
 const PDFDocument =  require('pdfkit');
 
 const Product = require('../models/Product');
 const Order = require('../models/Order');
 
+const ITEMS_PER_AGE = 2;
+
 exports.getIndex = (req, res, next) => {
-  Product.find()
-    .then(products => {
-      res.render('shop/index', {
-        pageTitle: 'Shop',
-        prods: products,
-      });
+  Product
+    .find()
+    .count()
+    .then(numProducts => {
+      const currentPage = req.query.page || 1;
+      Product
+        .find()
+        .skip((currentPage - 1) * ITEMS_PER_AGE)
+        .limit(ITEMS_PER_AGE)
+        .then(products => {
+          res.render('shop/index', {
+            pageTitle: 'Shop',
+            prods: products,
+            pagination: {
+              numPages: Math.ceil(numProducts/ITEMS_PER_AGE),
+              hasNextPage: (ITEMS_PER_AGE * currentPage) < numProducts,
+              hasPreviousPage: currentPage > 1,
+              currentPage: parseInt(currentPage),
+            },
+          });
+        })
     })
     .catch(error => {
       error.statusCode = 500;
@@ -20,13 +35,27 @@ exports.getIndex = (req, res, next) => {
 };
 
 exports.getProducts = (req, res, next) => {
-  Product.find()
-    .then(products => {
-      // Pass in the path which determines which header is currently active in main-layout.pug
-      res.render('shop/products', {
-        pageTitle: 'Shop',
-        prods: products,
-      });
+  Product
+    .find()
+    .count()
+    .then(numProducts => {
+      const currentPage = req.query.page || 1;
+      Product
+        .find()
+        .skip((currentPage - 1) * ITEMS_PER_AGE)
+        .limit(ITEMS_PER_AGE)
+        .then(products => {
+          res.render('shop/products', {
+            pageTitle: 'Shop',
+            prods: products,
+            pagination: {
+              numPages: Math.ceil(numProducts/ITEMS_PER_AGE),
+              hasNextPage: ITEMS_PER_AGE * currentPage < numProducts,
+              hasPreviousPage: currentPage > 1,
+              currentPage: parseInt(currentPage),
+            },
+          });
+        })
     })
     .catch(error => {
       error.statusCode = 500;
