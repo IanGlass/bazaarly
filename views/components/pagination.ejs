@@ -1,11 +1,11 @@
 <section class="pagination">
-    <% if (pagination.hasPreviousPage) { %>
-        <a href="?page=<%= (pagination.currentPage - 1) %>">Previous</a>
-    <% } %>
-    <% for (let page = 1; page <= pagination.numPages; page++) { %>
-        <a href="?page=<%= page %>" class="<%= page === pagination.currentPage ? 'active' : '' %>"><%= page %></a>
-    <% } %>
-    <% if (pagination.hasNextPage) { %>
-        <a href="?page=<%= (pagination.currentPage + 1) %>">Next</a>
-    <% } %>
+  <% if (pagination.hasPreviousPage) { %>
+    <a href="?page=<%= (pagination.currentPage - 1) %>">Previous</a>
+  <% } %>
+  <% for (let page = 1; page <= pagination.numPages; page++) { %>
+    <a href="?page=<%= page %>" class="<%= page === pagination.currentPage ? 'active' : '' %>"><%= page %></a>
+  <% } %>
+  <% if (pagination.hasNextPage) { %>
+    <a href="?page=<%= (pagination.currentPage + 1) %>">Next</a>
+  <% } %>
 </section>
