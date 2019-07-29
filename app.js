@@ -71,7 +71,8 @@ app.use(flash());
 
 // Add session authentication, csrf token and request path to all views
 app.use((req, res, next) => {
-  res.locals.path = req.originalUrl;
+  // Remove query params from URL path
+  res.locals.path = req.originalUrl.split('?')[0];
   res.locals.authenticated = req.session.authenticated;
   res.locals.csrfToken = req.csrfToken();
   next();
