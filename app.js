@@ -8,6 +8,8 @@ const MongoDBStore = require('connect-mongodb-session')(session);
 const csrf = require('csurf');
 const flash = require('connect-flash');
 
+const PORT = process.env.PORT || 5000
+
 // Stores secrets in process env variables
 require('dotenv').config()
 
@@ -128,7 +130,7 @@ app.use((error, req, res, next) => {
 // Connected to DB, now spin up server and listen for requests
 mongoose.connect(MONGODB_URI, {useNewUrlParser: true})
 .then(() => {
-  app.listen(3000);
+  app.listen(PORT, () => console.log(`Listening on ${ PORT }`));
 })
 .catch(error => console.log(error));
 
