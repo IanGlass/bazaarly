@@ -18,8 +18,6 @@ router.post('/cart-delete-item', isAuth, shopCont.postCartDeleteProduct);
 
 router.get('/checkout', isAuth, shopCont.getCheckout);
 
-router.post('/create-order', isAuth, shopCont.postOrder);
-
 router.get('/orders', isAuth, shopCont.getOrders);
 
 router.get('/invoice/:orderId', isAuth, shopCont.getInvoice);

@@ -1,4 +1,5 @@
 const PDFDocument =  require('pdfkit');
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 const Product = require('../models/Product');
 const Order = require('../models/Order');
@@ -124,14 +125,14 @@ exports.getCheckout = (req, res, next) => {
     .populate('cart.items.product')
     .execPopulate()
     .then(user => {
-      let totalPrice = 0;
+      let total = 0;
       user.cart.items.forEach((product) => {
-        totalPrice += product.quantity * product.product.price;
+        total += product.quantity * product.product.price;
       })
       res.render('shop/checkout', {
         pageTitle: 'Checkout',
         cartProducts: user.cart.items,
-        total: totalPrice,
+        total: total,
       });
     })
     .catch(error => {
@@ -145,10 +146,26 @@ exports.postOrder = (req, res, next) => {
     .populate('cart.items.product')
     .execPopulate()
     .then(user => {
+      let total = 0;
+      user.cart.items.forEach(product => {
+        total += product.quantity * product.product.price;
+      });
+
       return Order.create({
         user: req.user,
         products: user.cart.items,
+        total: total,
       })
+    })
+    .then((order) => {
+      // Send request to Stripe server to make a charge
+      return stripe.charges.create({
+        amount: order.total * 100,
+        currency: 'nzd',
+        description: 'Example Charge',
+        source: req.body.stripeToken,
+        metadata: { order_id: order._id.toString() },
+      });
     })
     .then(() => {
       return req.user.clearCart();

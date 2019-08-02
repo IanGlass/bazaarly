@@ -16,6 +16,8 @@ const errorCont = require('./controllers/errorCont');
 const adminData = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
 const authRoutes = require('./routes/auth');
+const isAuth = require('./middleware/is-auth');
+const shopCont = require('./controllers/shopCont');
 
 const MONGODB_URI = `mongodb+srv://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@cluster0-pvmln.mongodb.net/shop?`;
 
@@ -64,19 +66,16 @@ app.use(session({
   store: store,
 }));
 
-// Must be initialised after the session, as the session is used
-app.use(csrfProtection);
-// Used to res.redirect error messages back to client without persistent storage in session
-app.use(flash());
-
-// Add session authentication, csrf token and request path to all views
+// Add session authentication and request path to all views
 app.use((req, res, next) => {
   // Remove query params from URL path
   res.locals.path = req.originalUrl.split('?')[0];
   res.locals.authenticated = req.session.authenticated;
-  res.locals.csrfToken = req.csrfToken();
   next();
 })
+
+// Used to res.redirect error messages back to client without persistent storage in session
+app.use(flash());
 
 // Serve 500 error page
 app.get('/500', errorCont.error500);
@@ -99,6 +98,18 @@ app.use((req, res, next) => {
       return next(error);
     })
 });
+
+// Stripe does not handle CSRF token so need this route before csrfProtection is added
+app.post('/create-order', isAuth, shopCont.postOrder);
+
+// Must be initialised after the session, as the session is used
+app.use(csrfProtection);
+
+// Add csrf token all views
+app.use((req, res, next) => {
+  res.locals.csrfToken = req.csrfToken();
+  next();
+})
 
 app.use('/admin', adminData.routes);
 app.use(shopRoutes);
