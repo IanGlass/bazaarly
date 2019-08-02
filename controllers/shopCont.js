@@ -1,8 +1,8 @@
 const PDFDocument =  require('pdfkit');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
-const Product = require('../models/Product');
-const Order = require('../models/Order');
+const Product = require(`${__dirname}/../models/Product`);
+const Order = require(`${__dirname}/../models/Order`);
 
 const ITEMS_PER_AGE = 2;
 

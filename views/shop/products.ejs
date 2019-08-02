@@ -1,10 +1,10 @@
-<%- include('../components/head.ejs') %>
+<%- include(`${__dirname}/views/components/head.ejs`) %>
 
 <link rel="stylesheet" href="/css/product.css">
 </head>
 
 <body>
-  <%- include('../components/navigation.ejs') %>
+  <%- include(`${__dirname}/views/components/navigation.ejs`) %>
 
   <main>
     <% if (prods.length > 0) { %>
@@ -24,16 +24,16 @@
             <div class="card__actions">
               <a href="/products/<%= product.id %>" class="btn">Details</a>
               <% if (authenticated) { %>
-                <%- include('../components/add-to-cart.ejs', {product: product}) %>
+                <%- include(`${__dirname}/views/components/add-to-cart.ejs`, {product: product}) %>
               <% } %>
             </div>
           </article>
         <% } %>
       </div>
-      <%- include('../components/pagination.ejs') %>
+      <%- include(`${__dirname}/views/components/pagination.ejs`) %>
     <% } else { %>
       <h1>No Products Found</h1>
     <% } %>
   </main>
 
-  <%- include('../components/end.ejs') %>
+  <%- include(`${__dirname}/views/components/end.ejs`) %>

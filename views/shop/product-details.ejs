@@ -1,8 +1,8 @@
-<%- include('../components/head.ejs') %>
+<%- include(`${__dirname}/views/components/head.ejs`) %>
 </head>
 
 <body>
-  <%- include('../components/navigation.ejs') %>
+  <%- include(`${__dirname}/views/components/navigation.ejs`) %>
 
   <main class="centered">
     <h1><%= product.title %></h1>
@@ -15,10 +15,10 @@
     <h2>$<%= product.price %></h2>
     <p><%= product.description %></p>
     <% if (authenticated) { %>
-      <%- include('../components/add-to-cart.ejs') %>
+      <%- include(`${__dirname}/views/components/add-to-cart.ejs`) %>
     <% } %>
 
   </main>
 
 
-  <%- include('../components/end.ejs') %>
+  <%- include(`${__dirname}/views/components/end.ejs`) %>

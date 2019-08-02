@@ -1,7 +1,7 @@
 const { validationResult } = require('express-validator/check');
-const { deleteFile } = require('../helpers/file');
+const { deleteFile } = require(`${__dirname}/../helpers/file`);
 
-const Product = require('../models/Product');
+const Product = require(`${__dirname}/../models/Product`);
 
 exports.getAddProduct = (req, res, next) => {
   res.render('admin/edit-product', {

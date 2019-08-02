@@ -1,9 +1,9 @@
-<%- include('../components/head.ejs') %>
+<%- include(`${__dirname}/views/components/head.ejs`) %>
 <link rel="stylesheet" href="/css/cart.css">
 </head>
 
 <body>
-  <%- include('../components/navigation.ejs') %>
+  <%- include(`${__dirname}/views/components/navigation.ejs`) %>
   <main>
     <% if (cartProducts.length) { %>
       <ul class="cart__item-list">
@@ -29,4 +29,4 @@
 
   </main>
 
-  <%- include('../components/end.ejs') %>
+  <%- include(`${__dirname}/views/components/end.ejs`) %>
