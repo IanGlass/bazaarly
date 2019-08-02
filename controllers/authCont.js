@@ -5,7 +5,7 @@ const { validationResult } = require('express-validator/check')
 
 sgMail.setApiKey(process.env.SG_API_KEY);
 
-const User = require(`${__dirname}/../models/User`);
+const User = require('../models/user');
 
 exports.getLogin = (req, res, next) => {
   res.render('auth/login', {

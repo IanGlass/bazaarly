@@ -1,10 +1,10 @@
-<%- include(`${__dirname}/views/components/head.ejs`) %>
+<%- include('../components/head.ejs') %>
     <link rel="stylesheet" href="/css/forms.css">
     <link rel="stylesheet" href="/css/auth.css">
 </head>
 
 <body>
-   <%- include(`${__dirname}/views/components/navigation.ejs`) %>
+   <%- include('../components/navigation.ejs') %>
 
     <main>
         <form class="login-form" action="/signup" method="POST">
@@ -22,7 +22,7 @@
             </div>
             <button class="btn" type="submit">Signup</button>
             <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-            <%- include(`${__dirname}/views/components/validation.ejs`) %>
+            <%- include('../components/validation.ejs') %>
         </form>
     </main>
-<%- include(`${__dirname}/views/components/end.ejs`) %>
+<%- include('../components/end.ejs') %>

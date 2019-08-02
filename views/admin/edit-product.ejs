@@ -1,11 +1,11 @@
-<%- include(`${__dirname}/views/components/head.ejs`) %>
+<%- include('../components/head.ejs') %>
 
 <link rel="stylesheet" href="/css/product.css">
 <link rel="stylesheet" , href="/css/forms.css">
 </head>
 
 <body>
-  <%- include(`${__dirname}/views/components/navigation.ejs`) %>
+  <%- include('../components/navigation.ejs') %>
 
   <main>
     <form action="/admin/<%= product ? 'edit-product' : 'add-product' %>" method="POST" class="product-form"
@@ -36,8 +36,8 @@
       <% } %>
       <button type="submit" class="btn"><%= product ? "Update Product" : "Add Product" %></button>
       <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-      <%- include(`${__dirname}/views/components/validation.ejs`) %>
+      <%- include('../components/validation.ejs') %>
     </form>
   </main>
 
-  <%- include(`${__dirname}/views/components/end.ejs`) %>
+  <%- include('../components/end.ejs') %>

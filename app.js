@@ -11,13 +11,13 @@ const flash = require('connect-flash');
 // Stores secrets in process env variables
 require('dotenv').config()
 
-const User = require(`${__dirname}/models/User`);
-const errorCont = require(`${__dirname}/controllers/errorCont`);
-const adminData = require(`${__dirname}/routes/admin`);
-const shopRoutes = require(`${__dirname}/routes/shop`);
-const authRoutes = require(`${__dirname}/routes/auth`);
-const isAuth = require(`${__dirname}/middleware/is-auth`);
-const shopCont = require(`${__dirname}/controllers/shopCont`);
+const User = require('./models/user');
+const errorCont = require('./controllers/errorCont');
+const adminData = require('./routes/admin');
+const shopRoutes = require('./routes/shop');
+const authRoutes = require('./routes/auth');
+const isAuth = require('./middleware/is-auth');
+const shopCont = require('./controllers/shopCont');
 
 const MONGODB_URI = `mongodb+srv://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@cluster0-pvmln.mongodb.net/shop?`;
 

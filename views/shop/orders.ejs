@@ -1,9 +1,9 @@
-<%- include(`${__dirname}/views/components/head.ejs`) %>
+<%- include('../components/head.ejs') %>
 <link rel="stylesheet" href="/css/orders.css">
 </head>
 
 <body>
-  <%- include(`${__dirname}/views/components/navigation.ejs`) %>
+  <%- include('../components/navigation.ejs') %>
   <main>
     <% if (orders.length) { %>
       <ul class="orders">
@@ -25,4 +25,4 @@
     <% } %>
   </main>
 
-  <%- include(`${__dirname}/views/components/end.ejs`) %>
+  <%- include('../components/end.ejs') %>
