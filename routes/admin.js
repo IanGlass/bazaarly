@@ -41,6 +41,6 @@ body('description')
   .trim(),
 adminCont.postEditProduct);
 
-router.post('/delete-product', isAuth, adminCont.postDeleteProduct);
+router.delete('/product/:productId', isAuth, adminCont.deleteProduct);
 
 exports.routes = router;

@@ -1,8 +1,22 @@
 <%- include('../components/head.ejs') %>
+  <link rel="stylesheet" href="/css/cart.css">
 </head>
 
 <body>
   <%- include('../components/navigation.ejs') %>
+  <main>
+   <ul class="cart__item-list">
+     <% cartProducts.forEach(cartProduct => { %>
+      <li class="cart__item">
+        <h1><%= cartProduct.product.title %></h1>
+        <h2>Quantity: <%= cartProduct.quantity %></h2>
+      </li>
+     <% }) %>
+   </ul>
+   <div class="centered">
+     <h2>Total: $<%= total %></h2>
+   </div>
 
+  </main>
 
   <%- include('../components/end.ejs') %>

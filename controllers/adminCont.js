@@ -120,9 +120,9 @@ exports.postEditProduct = (req, res, next) => {
     })
   }
 
-exports.postDeleteProduct = (req, res, next) => {
+exports.deleteProduct = (req, res, next) => {
   Product
-    .findById(req.body.productId)
+    .findById(req.params.productId)
     .then((product) => {
       deleteFile(product.imageUrl);
     })
@@ -131,13 +131,12 @@ exports.postDeleteProduct = (req, res, next) => {
       return next(error);
     })
   Product
-    .deleteOne({ _id: req.body.productId, user: req.session.user._id })
+    .deleteOne({ _id: req.params.productId, user: req.session.user._id })
     .then(() => {
-      res.redirect('/admin/products')
+      res.json({ success: true });
     })
     .catch(error => {
-      error.statusCode = 500;
-      return next(error);
+      res.status(500).json({ success: false });
     })
 }
 
