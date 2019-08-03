@@ -128,7 +128,7 @@ exports.postSignup = (req, res, next) => {
         .then(() => {
           sgMail.send({
             to: req.body.email,
-            from: 'shop@node-complete.com',
+            from: 'Bazaarly',
             subject: 'Signup Succeeded!',
             text: 'and easy to do anywhere, even with Node.js',
             html: '<h1>You successfully signed up</h1>'
@@ -178,7 +178,7 @@ exports.postReset = (req, res, next) => {
           .then(() => {
             sgMail.send({
               to: req.body.email,
-              from: 'shop@node-complete.com',
+              from: 'Bazaarly',
               subject: 'Password Reset',
               html: `
                 <p>You requested a password reset</p>
