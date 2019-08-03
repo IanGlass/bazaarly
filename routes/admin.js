@@ -30,7 +30,6 @@ router.get('/edit-product/:productId', isAuth, isAdmin, adminCont.getEditProduct
 // Product id to edit is enclosed in the request body
 router.post('/edit-product', isAuth, isAdmin,
 body('title')
-  .isAlphanumeric()
   .isLength({ min: 3 })
   .trim(),
 body('price')

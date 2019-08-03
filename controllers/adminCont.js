@@ -2,6 +2,7 @@ const { validationResult } = require('express-validator/check');
 const { deleteFile } = require('../helpers/file');
 
 const Product = require('../models/product');
+const Order = require('../models/order');
 
 exports.getAddProduct = (req, res, next) => {
   res.render('admin/edit-product', {
