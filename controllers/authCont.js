@@ -51,6 +51,7 @@ exports.postLogin = (req, res, next) => {
           }
           req.session.user = user;
           req.session.authenticated = true;
+          req.session.admin = user.admin;
           // Can take some ms to save, only redirect once session is saved
           req.session.save((error) => {
             if (error) {console.log(error);}
@@ -120,6 +121,7 @@ exports.postSignup = (req, res, next) => {
           return User.create({
             email: req.body.email,
             password: hashedPassword,
+            admin: req.body.admin ? true: false,
             cart: {
               items: [],
             }

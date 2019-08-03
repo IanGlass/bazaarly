@@ -73,6 +73,7 @@ app.use((req, res, next) => {
   // Remove query params from URL path
   res.locals.path = req.originalUrl.split('?')[0];
   res.locals.authenticated = req.session.authenticated;
+  res.locals.admin = req.session.admin;
   res.locals.__dirname = __dirname;
   next();
 })

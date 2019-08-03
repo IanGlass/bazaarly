@@ -12,6 +12,11 @@ const userSchema = mongoose.Schema({
     required: true,
   },
 
+  admin: {
+    type: Boolean,
+    required: true,
+  },
+
   resetToken: String,
 
   resetTokenExpiration: Date,

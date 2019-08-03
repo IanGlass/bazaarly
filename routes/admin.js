@@ -3,14 +3,15 @@ const { body } = require('express-validator/check');
 
 const adminCont = require('../controllers/adminCont');
 const isAuth = require('../middleware/is-auth');
+const isAdmin = require('../middleware/is-admin');
 
 const router = express.Router();
 
-router.get('/add-product', isAuth, adminCont.getAddProduct);
+router.get('/add-product', isAuth, isAdmin, adminCont.getAddProduct);
 
-router.get('/products', isAuth, adminCont.getProducts);
+router.get('/products', isAuth, isAdmin, adminCont.getProducts);
 
-router.post('/add-product', isAuth,
+router.post('/add-product', isAuth, isAdmin,
 body('title')
   .isString()
   .isLength({ min: 3 })
@@ -24,10 +25,10 @@ body('description')
   .trim(),
 adminCont.postAddProduct);
 
-router.get('/edit-product/:productId', isAuth, adminCont.getEditProduct);
+router.get('/edit-product/:productId', isAuth, isAdmin, adminCont.getEditProduct);
 
 // Product id to edit is enclosed in the request body
-router.post('/edit-product', isAuth,
+router.post('/edit-product', isAuth, isAdmin,
 body('title')
   .isAlphanumeric()
   .isLength({ min: 3 })
@@ -41,6 +42,6 @@ body('description')
   .trim(),
 adminCont.postEditProduct);
 
-router.delete('/product/:productId', isAuth, adminCont.deleteProduct);
+router.delete('/product/:productId', isAuth, isAdmin, adminCont.deleteProduct);
 
 exports.routes = router;
