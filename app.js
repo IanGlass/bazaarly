@@ -21,7 +21,7 @@ const authRoutes = require('./routes/auth');
 const isAuth = require('./middleware/is-auth');
 const shopCont = require('./controllers/shopCont');
 
-const MONGODB_URI = `mongodb+srv://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@cluster0-pvmln.mongodb.net/shop?`;
+const MONGODB_URI = `mongodb+srv://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@cluster0-pvmln.mongodb.net/bazaarly?`;
 
 const app = express();
 
