@@ -3,20 +3,14 @@
 const { assert } = require('chai');
 const {
   describe,
-  after,
-  before,
   it,
 } = require('mocha');
 
 const { app } = require('../../../app')
 const request = require('supertest');
-const sinon = require('sinon');
 
-const async = require('async');
 const fs = require('fs');
 const path = require('path');
-const Product = require('../../../models/product');
-const { products } = require('../../data/products');
 
 describe('ErrorController', () => {
   describe('/404', () => {

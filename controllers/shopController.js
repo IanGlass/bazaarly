@@ -3,7 +3,6 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 const Product = require('../models/product');
 const Order = require('../models/order');
-const log = require('../logger');
 
 const ITEMS_PER_AGE = 2;
 
