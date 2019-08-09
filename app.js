@@ -7,8 +7,8 @@ const session = require('express-session');
 const MongoDBStore = require('connect-mongodb-session')(session);
 const csrf = require('csurf');
 const flash = require('connect-flash');
-
-const PORT = process.env.PORT || 5000
+const helmet = require('helmet');
+const compression = require('compression');
 
 // Stores secrets in process env variables
 require('dotenv').config()
@@ -38,6 +38,9 @@ app.set('views', 'views');
 
 // Automatically parse any incoming data into res.body
 app.use(bodyParser.urlencoded({ extended: false }));
+
+app.use(helmet());
+app.use(compression());
 
 // Parse file data into the req.file and save to /images if png, jpg or jpeg only
 const fileStorage = multer.diskStorage({
@@ -131,6 +134,7 @@ app.use((error, req, res, next) => {
 // Connected to DB, now spin up server and listen for requests
 mongoose.connect(MONGODB_URI, {useNewUrlParser: true})
 .then(() => {
+  const PORT = process.env.PORT || 5000
   app.listen(PORT, () => console.log(`Listening on ${ PORT }`));
 })
 .catch(error => console.log(error));
