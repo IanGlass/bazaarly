@@ -4,5 +4,4 @@
 --recursive
 --timeout 180s
 --exit
---debug
 test/integration/**/*.test.js

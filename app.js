@@ -20,6 +20,7 @@ const shopRoutes = require('./routes/shop');
 const authRoutes = require('./routes/auth');
 const isAuth = require('./middleware/is-auth');
 const shopCont = require('./controllers/shopController');
+const log = require('./logger');
 
 const MONGODB_URI = `mongodb+srv://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@cluster0-pvmln.mongodb.net/bazaarly?`;
 
@@ -89,9 +90,6 @@ app.use((req, res, next) => {
 // Used to res.redirect error messages back to client without persistent storage in session
 app.use(flash());
 
-// Serve 500 error page
-app.get('/500', errorCont.error500);
-
 // Fetch the user object using our mongoose user model and session stored user Id so all model methods are available for this request
 app.use((req, res, next) => {
   if (!req.session.user) {
@@ -123,6 +121,9 @@ app.use((req, res, next) => {
   next();
 })
 
+// Serve 500 error page
+app.get('/500', errorCont.error500);
+
 app.use('/admin', adminData.routes);
 app.use(shopRoutes);
 app.use(authRoutes);
@@ -132,7 +133,7 @@ app.use(errorCont.error404);
 
 // Catch server errors thrown in application
 app.use((error, req, res, next) => {
-  console.log(error);
+  log.error(error);
   res.status(error.statusCode).redirect(`/${error.statusCode}`);
 })
 

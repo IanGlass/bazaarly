@@ -17,7 +17,7 @@ const fs = require('fs');
 const path = require('path');
 const Product = require('../../../models/product');
 const { products } = require('../../data/products');
-const mongoose = require('mongoose');
+const log = require('../../../logger');
 
 describe('ShopController', () => {
   before(done => {
@@ -35,32 +35,36 @@ describe('ShopController', () => {
     }, done)
   }),
 
-  // after(done => {
-  //   async.auto({
-  //     deleteProducts: callback => {
-  //       Product
-  //         .deleteMany({})
-  //         .then(() => {
-  //           callback() 
-  //         })
-  //         .catch(error => {
-  //           callback(error);
-  //         })
-  //     }
-  //   }, done)
-  // }),
+  beforeEach(done => {
+    this.sinon = sinon.createSandbox();
+    done();
+  })
+
+  after(done => {
+    async.auto({
+      deleteProducts: callback => {
+        Product
+          .deleteMany({})
+          .then(() => {
+            callback() 
+          })
+          .catch(error => {
+            callback(error);
+          })
+      }
+    }, done)
+  }),
 
   describe('/index', () => {
     it('should fetch the index view with two products', done => {
       request(app)
         .get('/')
-        .send()
         .expect(200)
         .end((error, res) => {
           if (error) { return done(error) }
           fs.readFile(path.join(__dirname, '..', '..', 'data', 'getIndex.html'), 'utf8', (error, getIndex) => {
             assert.strictEqual(res.text, getIndex);
-            done();
+            done(error);
           })
         })
     })
@@ -68,18 +72,34 @@ describe('ShopController', () => {
 
   describe('/products/productId', () => {
     it('should fetch details of a single product', done => {
-      console.log(`/products/${mongoose.Types.ObjectId(1)}`)
+      Product
+        .findOne({
+          title: products[0].title,
+        })
+        .then(product => {
+          request(app)
+            .get(`/products/${product._id}`)
+            .expect(200)
+            .end((error, res) => {
+              if (error) { return done(error) }
+              fs.readFile(path.join(__dirname, '..', '..', 'data', 'getProduct.html'), 'utf8', (error, getProduct) => {
+                assert.strictEqual(res.text, getProduct);
+                done(error);
+              })
+            })
+        })
+        .catch(error => {
+          done(error);
+        })
+    }),
+    it('should return an 302 error for invalid productId', done => {
+      const logError = sinon.spy(log, 'error');
       request(app)
-        .get(`/products/${mongoose.Types.ObjectId(1)}`)
-        .send()
-        .expect(200)
-        .end((error, res) => {
-          if (error) { return done(error) }
-          console.log(res.text);
-          fs.readFile(path.join(__dirname, '..', '..', 'data', 'getIndex.html'), 'utf8', (error, getIndex) => {
-            assert.strictEqual(res.text, getIndex);
-            done();
-          })
+        .get(`/products/100`)
+        .expect(302)
+        .end((error) => {
+          assert.strictEqual(logError.args[0][0].message, 'Cast to ObjectId failed for value "100" at path "_id" for model "Product"');
+          done(error);
         })
     })
   })
