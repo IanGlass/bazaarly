@@ -1,0 +1,8 @@
+--bail
+--fullStackTrace
+--full-trace
+--recursive
+--timeout 180s
+--exit
+--debug
+test/integration/**/*.test.js

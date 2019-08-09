@@ -25,6 +25,11 @@ const MONGODB_URI = `mongodb+srv://${process.env.MONGO_USERNAME}:${process.env.M
 
 const app = express();
 
+// Expose the app for testing
+module.exports = {
+  app,
+}
+
 const store = new MongoDBStore({
   uri: MONGODB_URI,
   collection: 'sessions',

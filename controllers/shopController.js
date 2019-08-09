@@ -9,7 +9,7 @@ const ITEMS_PER_AGE = 2;
 exports.getIndex = (req, res, next) => {
   Product
     .find()
-    .count()
+    .countDocuments()
     .then(numProducts => {
       const currentPage = req.query.page || 1;
       Product
@@ -38,7 +38,7 @@ exports.getIndex = (req, res, next) => {
 exports.getProducts = (req, res, next) => {
   Product
     .find()
-    .count()
+    .countDocuments()
     .then(numProducts => {
       const currentPage = req.query.page || 1;
       Product
@@ -65,7 +65,8 @@ exports.getProducts = (req, res, next) => {
 }
 
 exports.getProduct = (req, res, next) => {
-  Product.findById(req.params.productId)
+  Product
+    .findById(req.params.productId)
     .then(product => {
       res.render('shop/product-details', {
         pageTitle: 'Product Details',
