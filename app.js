@@ -14,12 +14,12 @@ const compression = require('compression');
 require('dotenv').config()
 
 const User = require('./models/user');
-const errorCont = require('./controllers/errorCont');
+const errorCont = require('./controllers/errorController');
 const adminData = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
 const authRoutes = require('./routes/auth');
 const isAuth = require('./middleware/is-auth');
-const shopCont = require('./controllers/shopCont');
+const shopCont = require('./controllers/shopController');
 
 const MONGODB_URI = `mongodb+srv://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@cluster0-pvmln.mongodb.net/bazaarly?`;
 
