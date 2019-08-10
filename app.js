@@ -44,6 +44,7 @@ app.set('views', 'views');
 
 // Automatically parse any incoming data into res.body
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
 app.use(helmet());
 app.use(compression());
@@ -71,7 +72,7 @@ app.use('/data/images', express.static(path.join(__dirname, 'data/images')));
 
 // Add session middleware to allow multiple requests from the same connection without re-authentication
 app.use(session({
-  secret: 'my secret',
+  secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
   store: store,
@@ -112,14 +113,17 @@ app.use((req, res, next) => {
 // Stripe does not handle CSRF token so need this route before csrfProtection is added
 app.post('/create-order', isAuth, shopCont.postOrder);
 
-// Must be initialised after the session, as the session is used
-app.use(csrfProtection);
+// Must be initialised after the session, turn off csrf protection during testing
+if (!process.env.testing) {
+  app.use(csrfProtection);
 
-// Add csrf token all views
-app.use((req, res, next) => {
-  res.locals.csrfToken = req.csrfToken();
-  next();
-})
+  // Add csrf token all views
+  app.use((req, res, next) => {
+    res.locals.csrfToken = req.csrfToken();
+    next();
+  })
+}
+
 
 // Serve 500 error page
 app.get('/500', errorCont.error500);
@@ -133,6 +137,7 @@ app.use(errorCont.error404);
 
 // Catch server errors thrown in application
 app.use((error, req, res, next) => {
+  console.log(error);
   log.error(error);
   res.status(error.statusCode).redirect(`/${error.statusCode}`);
 })

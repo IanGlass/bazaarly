@@ -7,9 +7,9 @@ const isAdmin = require('../middleware/is-admin');
 
 const router = express.Router();
 
-router.get('/add-product', isAuth, isAdmin, adminCont.getAddProduct);
-
 router.get('/products', isAuth, isAdmin, adminCont.getProducts);
+
+router.get('/add-product', isAuth, isAdmin, adminCont.getAddProduct);
 
 router.post('/add-product', isAuth, isAdmin,
 body('title')
@@ -27,7 +27,6 @@ adminCont.postAddProduct);
 
 router.get('/edit-product/:productId', isAuth, isAdmin, adminCont.getEditProduct);
 
-// Product id to edit is enclosed in the request body
 router.post('/edit-product', isAuth, isAdmin,
 body('title')
   .isLength({ min: 3 })

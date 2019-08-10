@@ -6,6 +6,10 @@ const Order = require('../models/order');
 
 const ITEMS_PER_AGE = 2;
 
+/**
+ * @description Renders a paginated view of all the products available
+ * @path GET /
+ */
 exports.getIndex = (req, res, next) => {
   Product
     .find()
@@ -35,6 +39,10 @@ exports.getIndex = (req, res, next) => {
     })
 };
 
+/**
+ * @description Renders a paginated view of all the products available
+ * @path GET /products
+ */
 exports.getProducts = (req, res, next) => {
   Product
     .find()
@@ -64,6 +72,10 @@ exports.getProducts = (req, res, next) => {
     })
 }
 
+/**
+ * @description Shows a more detailed description of a particular product
+ * @path GET /products/:productId
+ */
 exports.getProduct = (req, res, next) => {
   Product
     .findById(req.params.productId)
@@ -79,6 +91,10 @@ exports.getProduct = (req, res, next) => {
     })
 }
 
+/**
+ * @description Renders shop/cart view containing all of the current user's cart items 
+ * @path GET /cart
+ */
 exports.getCart = (req, res, next) => {
   req.user
     .populate('cart.items.product')
@@ -95,6 +111,11 @@ exports.getCart = (req, res, next) => {
     })
 }
 
+/**
+ * @description Adds a product to the current user's cart
+ * @path POST /cart
+ * @param {Object} req.body.productId
+ */
 exports.postCart = (req, res, next) => {
   Product.findById(req.body.productId)
     .then(product => {
@@ -109,6 +130,11 @@ exports.postCart = (req, res, next) => {
     })
 }
 
+/**
+ * @description Removes a cart item from the current user
+ * @path POST /cart-delete-item
+ * @param {Object} req.body.productId
+ */
 exports.postCartDeleteProduct = (req, res, next) => {
   req.user
     .removeFromCart(req.body.productId)
@@ -121,6 +147,10 @@ exports.postCartDeleteProduct = (req, res, next) => {
     })
 }
 
+/**
+ * @description Renders shop/checkout view containing all the user's cart items and total price
+ * @path GET /checkout
+ */
 exports.getCheckout = (req, res, next) => {
   req.user
     .populate('cart.items.product')
@@ -142,6 +172,10 @@ exports.getCheckout = (req, res, next) => {
     })
 }
 
+/**
+ * @description Creates an order from the user's cart and clears their cart. Called by stripe as a callback route
+ * @path POST /create-order
+ */
 exports.postOrder = (req, res, next) => {
   req.user
     .populate('cart.items.product')
@@ -180,6 +214,9 @@ exports.postOrder = (req, res, next) => {
     })
 }
 
+/**
+ * @description Renders shop/orders view containing all a user's orders
+ */
 exports.getOrders = (req, res, next) => {
   Order.find({ user: req.user })
     .then((orders) => {
@@ -194,8 +231,11 @@ exports.getOrders = (req, res, next) => {
     })
 }
 
+/**
+ * @description Sends a PDF of the selected order to the user's browser
+ * @path GET /invoice/:orderId
+ */
 exports.getInvoice = (req, res, next) => {
-  // Should the requesting user be able to see the invoice?
   Order.findById({ _id: req.params.orderId })
     .then(order => {
       if (order.user.toString() !== req.session.user._id.toString()) {

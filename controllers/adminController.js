@@ -2,8 +2,27 @@ const { validationResult } = require('express-validator/check');
 const { deleteFile } = require('../helpers/file');
 
 const Product = require('../models/product');
-const Order = require('../models/order');
 
+/**
+ * @description Renders admin/products view containting the list of products for the admin user
+ * @path GET /admin/products
+ */
+exports.getProducts = (req, res, next) => {
+  Product
+    .find({ user: req.session.user._id })
+    .then((products) => {
+      res.render('admin/products', {
+        pageTitle: 'Admin Products',
+        prods: products,
+      });
+    })
+    .catch(error => console.log(error))
+}
+
+/**
+ * @description Renders admin/edit-product view to add a new product
+ * @path GET /admin/add-product
+ */
 exports.getAddProduct = (req, res, next) => {
   res.render('admin/edit-product', {
     pageTitle: 'Add Product',
@@ -13,6 +32,10 @@ exports.getAddProduct = (req, res, next) => {
   });
 }
 
+/**
+ * @description Inserts a new product from the GET / route
+ * @path POST /admin/add-product
+ */
 exports.postAddProduct = (req, res, next) => {
   if (!req.file) {
     req.flash('error', [{ param: 'imageUrl', msg: 'Invalid image' }]);
@@ -50,18 +73,10 @@ exports.postAddProduct = (req, res, next) => {
     })
 }
 
-exports.getProducts = (req, res, next) => {
-  Product
-    .find({ user: req.session.user._id })
-    .then((products) => {
-      res.render('admin/products', {
-        pageTitle: 'Admin Products',
-        prods: products,
-      });
-    })
-    .catch(error => console.log(error))
-}
-
+/**
+ * @description Renders the admin/edit-product view for the admin user
+ * @path GET /admin/edit-product/:productId
+ */
 // add-product and edit-product share the same view
 exports.getEditProduct = (req, res, next) => {
   Product
@@ -83,6 +98,15 @@ exports.getEditProduct = (req, res, next) => {
     })
 }
 
+/**
+ * @description Updates the edited product from GET /admin/edit-product/:productId
+ * @path POST GET /admin/edit-product
+ * @param {Object} req.body.productId The id of the product to update
+ * @param {Object} req.body.title
+ * @param {Object} req.body.imageUrl
+ * @param {Object} req.body.price
+ * @param {Object} req.body.description
+ */
 exports.postEditProduct = (req, res, next) => {
   if (!validationResult(req).isEmpty()) {
     req.flash('error', validationResult(req).errors);
@@ -121,6 +145,10 @@ exports.postEditProduct = (req, res, next) => {
     })
   }
 
+  /**
+   * @description Deletes a product by Id for the admin user
+   * @path DELETE /admin/product/:productId
+   */
 exports.deleteProduct = (req, res, next) => {
   Product
     .findById(req.params.productId)

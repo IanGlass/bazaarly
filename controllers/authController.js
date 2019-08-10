@@ -7,6 +7,10 @@ sgMail.setApiKey(process.env.SG_API_KEY);
 
 const User = require('../models/user');
 
+/**
+ * @description Renders the auth/login view for any user
+ * @path GET /login
+ */
 exports.getLogin = (req, res, next) => {
   res.render('auth/login', {
     pageTitle: 'Login',
@@ -16,7 +20,12 @@ exports.getLogin = (req, res, next) => {
   });
 }
 
-// Fetch the user and add the user to the session
+/**
+ * @description Submits login information from the GET /login route
+ * @path POST /login
+ * @param {Object} req.body.email
+ * @param {Object} req.body.password
+ */
 exports.postLogin = (req, res, next) => {
   // Catch user input errors
   if (!validationResult(req).isEmpty()) {
@@ -49,6 +58,7 @@ exports.postLogin = (req, res, next) => {
             });
             return res.status(422).redirect('/login');
           }
+          // Add the fetched user to the session for later consumption
           req.session.user = user;
           req.session.authenticated = true;
           req.session.admin = user.admin;
@@ -58,7 +68,7 @@ exports.postLogin = (req, res, next) => {
             return res.redirect('/');
           })
         })
-        .catch(error => {
+        .catch(() => {
           req.flash('error', { msg:'An unknown error occurred' });
           req.flash('oldInput', {
             email: req.body.email,
@@ -73,7 +83,10 @@ exports.postLogin = (req, res, next) => {
     })
 }
 
-// Destroying the session containing authentication data effectively logs user out
+/**
+ * @description Destroys the user session object, effectively logging them out
+ * @path POST /logout
+ */
 exports.postLogout = (req, res, next) => {
   req.session.destroy((error) => {
     if (error) { console.log(error); }
@@ -81,6 +94,10 @@ exports.postLogout = (req, res, next) => {
   });
 }
 
+/**
+ * @description Renders the auth/signup view to create a new user
+ * @path GET /signup
+ */
 exports.getSignup = (req, res, next) => {
   res.render('auth/signup', {
     pageTitle: 'Signup',
@@ -91,6 +108,14 @@ exports.getSignup = (req, res, next) => {
   });
 };
 
+/**
+ * @description Creates a new user from the GET /signup form submission
+ * @path POST /signup
+ * @param {Object} req.body.email
+ * @param {Object} req.body.password
+ * @param {Object} req.body.confirmPassword
+ * @param {Object} req.body.admin Is the user going to list products to sell or buy. Determines functionality available to user
+ */
 exports.postSignup = (req, res, next) => {
   // Catch user input errors
   if (!validationResult(req).isEmpty()) {
@@ -144,6 +169,10 @@ exports.postSignup = (req, res, next) => {
     })
 }
 
+/**
+ * @description Renders the auth/reset view to reset a user password
+ * @path GET /reset
+ */
 exports.getReset = (req, res, next) => {
   res.render('auth/reset', {
     pageTitle: 'Reset',
@@ -153,10 +182,14 @@ exports.getReset = (req, res, next) => {
   })
 }
 
+/**
+ * @description Sends a reset link via email and adds reset token to user in DB if the user exists
+ * @path POST /reset
+ * @param {Object} res.body.email
+ */
 exports.postReset = (req, res, next) => {
   crypto.randomBytes(32, (error, buffer) => {
     if (error) {
-      console.log(error);
       req.flash('error', { msg: 'Something went wrong' });
       req.flash('oldInput', {
         email: req.body.email,
@@ -198,6 +231,10 @@ exports.postReset = (req, res, next) => {
   });
 }
 
+/**
+ * @description Dynamic route that renders the auth/new-password view to set new password view if the reset token is valid
+ * @path /GET /new-password/:resetToken
+ */
 exports.getNewPassword = (req, res, next) => {
   // Only render if valid user for reset token and token not expired
   User
@@ -223,6 +260,12 @@ exports.getNewPassword = (req, res, next) => {
     })
 }
 
+/**
+ * @description Updates the password for the user by id from the GET /new-password/:resetToken form submission
+ * @path POST /new-password
+ * @param {Object} req.body.resetToken
+ * @param {Object} req.body.password
+ */
 exports.postNewPassword = (req, res, next) => {
   User
     .findOne({
