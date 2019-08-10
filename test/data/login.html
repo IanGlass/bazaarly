@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Login</title>
+  <link rel="stylesheet" href="/css/main.css">
+
+    <link rel="stylesheet", href="/css/forms.css">
+    <link rel="stylesheet", href="/css/auth.css">
+</head>
+
+<body>
+    <header class="main-header">
+  <nav class="main-header__nav">
+    <ul class="main-header__item-list">
+      
+    </ul>
+    <ul class="main-header__item-list">
+      
+        <li class="main-header__item">
+          <a class="active" href="/login">Login</a>
+        </li>
+        <li class="main-header__item">
+          <a class="" href="/signup">Signup</a>
+        </li>
+      
+    </ul>
+  </nav>
+</header>
+
+<nav class="mobile-nav">
+  <ul class="mobile-nav__item-list">
+    
+    
+      <li class="mobile-nav__item">
+        <a class="active" href="/login">Login</a>
+      </li>
+      <li class="mobile-nav__item">
+        <a class="" href="/signup">Signup</a>
+      </li>
+    
+  </ul>
+</nav>
+
+    <main>
+        <form action="/login" method="POST" class="login-form">
+            <div class="form-control">
+                <label for="email">E-Mail</label>
+                <input class="" type="email" name="email" id="email" value="">
+            </div>
+            <div class="form-control">
+                <label for="password">Password</label>
+                <input class="" type="password" name="password" id="password" value="">
+            </div>
+
+            <button type="submit" class="btn">Login</button>
+            <input type="hidden" name="_csrf" value="q2UZ2Qo6-kDvMwyNv7k0Uz6Ao83Q5hIsOJxM">
+            
+
+        </form>
+        <div class="centered">
+            <a href="/reset">Reset Password</a>
+        </div>
+    </main>
+
+</body>
+
+</html>

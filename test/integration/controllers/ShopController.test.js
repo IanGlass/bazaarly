@@ -38,7 +38,7 @@ describe('ShopController', () => {
   beforeEach(done => {
     this.sinon = sinon.createSandbox();
     done();
-  })
+  }),
 
   after(done => {
     async.auto({
@@ -55,7 +55,7 @@ describe('ShopController', () => {
     }, done)
   }),
 
-  describe('/index', () => {
+  describe('GET /index', () => {
     it('should fetch the index view with two products', done => {
       request(app)
         .get('/')
@@ -70,7 +70,7 @@ describe('ShopController', () => {
     })
   }),
 
-  describe('/products/productId', () => {
+  describe('GET /products/productId', () => {
     it('should fetch details of a single product', done => {
       Product
         .findOne({

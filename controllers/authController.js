@@ -1,11 +1,12 @@
 const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 const sgMail = require('@sendgrid/mail');
-const { validationResult } = require('express-validator/check')
+const { validationResult } = require('express-validator/check');
 
 sgMail.setApiKey(process.env.SG_API_KEY);
 
 const User = require('../models/user');
+const log = require('../logger');
 
 /**
  * @description Renders the auth/login view for any user
@@ -40,6 +41,7 @@ exports.postLogin = (req, res, next) => {
     .findOne({ email: req.body.email })
     .then(user => {
       if (!user) {
+        log.info(`POST /login - No User Found                  - req.body.email: ${req.body.email}`);
         req.flash('error', { msg:'Invalid email or password' });
         req.flash('oldInput', {
           email: req.body.email,
@@ -51,6 +53,7 @@ exports.postLogin = (req, res, next) => {
         .compare(req.body.password, user.password)
         .then(matched => {
           if (!matched) {
+            log.info(`POST /login - Password Mismatch                  - user.email: ${user.email}`);
             req.flash('error', { msg:'Invalid email or password' });
             req.flash('oldInput', {
               email: req.body.email,
@@ -65,7 +68,8 @@ exports.postLogin = (req, res, next) => {
           // Can take some ms to save, only redirect once session is saved
           req.session.save((error) => {
             if (error) {console.log(error);}
-            return res.redirect('/');
+            log.info(`POST /login - User Logged In                  - user.email: ${user.email}`);
+            return res.status(200).redirect('/');
           })
         })
         .catch(() => {
@@ -132,6 +136,7 @@ exports.postSignup = (req, res, next) => {
     .findOne({ email: req.body.email })
     .then(existingUser => {
       if (existingUser) {
+        log.info(`POST /login - User Email Already Exists                 - req.body.email: ${req.body.email}`);
         req.flash('error', { msg: 'E-Mail address already exists' });
         req.flash('oldInput', {
           email: req.body.email,
