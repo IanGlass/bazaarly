@@ -206,6 +206,7 @@ exports.postReset = (req, res, next) => {
       .findOne({ email: req.body.email })
       .then(user => {
         if (!user) {
+          log.info(`POST /reset - No User Found                  - req.body.email: ${req.body.email}`);
           req.flash('error', { msg: 'No account with that E-Mail found.' });
           req.flash('oldInput', {
             email: req.body.email,
@@ -226,6 +227,7 @@ exports.postReset = (req, res, next) => {
               `
             });
             req.flash('success', 'Password reset link sent, please check your email');
+            log.info(`POST /reset - User reset token sent                  - req.body.email: ${req.body.email}`);
             return res.redirect('/reset');
           })
       })
@@ -281,6 +283,14 @@ exports.postNewPassword = (req, res, next) => {
       _id: req.body.userId
     })
     .then(user => {
+      if (!user) {
+        log.info(`POST /reset - Invalid Reset Token                  - req.body.resetToken: ${req.body.resetToken}`);
+        req.flash('error', { msg: 'Invalid Reset Token.' });
+        req.flash('oldInput', {
+          email: req.body.email,
+        });
+        return res.status(422).redirect(`/new-password/${req.body.resetToken}`);
+      }
       bcrypt
         .hash(req.body.password, 12)
         .then(hashedPassword => {

@@ -60,6 +60,51 @@ describe('AuthController', () => {
     done();
   }),
 
+  describe('POST /login', () => {
+    it('should succeed login', done => {
+      const logInfo = this.sinon.spy(log, 'info');
+      request(app)
+        .post('/login')
+        .send({
+          email: users[0].email,
+          password: users[0].unhashedPassword,
+        })
+        .expect(302)
+        .end((error, res) => {
+          assert.strictEqual(logInfo.getCall(0).args[0], 'POST /login - User Logged In                  - user.email: admin@admin.com');
+          done(error)
+        })
+    }),
+    it('should fail login with incorrect password', done => {
+      const logInfo = this.sinon.spy(log, 'info');
+      request(app)
+        .post('/login')
+        .send({
+          email: users[0].email,
+          password: 'iamnotcorrect',
+        })
+        .expect(302)
+        .end((error, res) => {
+          assert.strictEqual(logInfo.getCall(0).args[0], 'POST /login - Password Mismatch                  - user.email: admin@admin.com');
+          done(error);
+        })
+    }),
+    it('should fail for invalid user email', done => {
+      const logInfo = this.sinon.spy(log, 'info');
+      request(app)
+        .post('/login')
+        .send({
+          email: 'invalid@user.com',
+          password: 'iamnotcorrect',
+        })
+        .expect(302)
+        .end((error, res) => {
+          assert.strictEqual(logInfo.getCall(0).args[0], 'POST /login - No User Found                  - req.body.email: invalid@user.com');
+          done(error);
+        })
+    })
+  }),
+
   describe('POST /signup', () => {
     it('should create a user', done => {
       request(app)
@@ -101,48 +146,49 @@ describe('AuthController', () => {
     })
   }),
 
-  describe('POST /login', () => {
-    it('should succeed to login', done => {
+  describe('POST /reset', done => {
+    it('should send a reset link', done => {
       const logInfo = this.sinon.spy(log, 'info');
       request(app)
-        .post('/login')
+        .post('/reset')
         .send({
-          email: users[0].email,
-          password: users[0].unhashedPassword,
+          email: 'admin@admin.com',
         })
         .expect(302)
         .end((error, res) => {
-          assert.strictEqual(logInfo.getCall(0).args[0], 'POST /login - User Logged In                  - user.email: admin@admin.com');
-          done(error)
-        })
-    }),
-    it('should fail login with incorrect password', done => {
-      const logInfo = this.sinon.spy(log, 'info');
-      request(app)
-        .post('/login')
-        .send({
-          email: users[0].email,
-          password: 'iamnotcorrect',
-        })
-        .expect(302)
-        .end((error, res) => {
-          assert.strictEqual(logInfo.getCall(0).args[0], 'POST /login - Password Mismatch                  - user.email: admin@admin.com');
+          assert.strictEqual(logInfo.getCall(0).args[0], 'POST /reset - No User Found                  - req.body.email: missing@missing.com');
           done(error);
         })
-    }),
-    it('should fail for invalid user email', done => {
+    })
+    it('should fail for non-existant user', done => {
       const logInfo = this.sinon.spy(log, 'info');
       request(app)
-        .post('/login')
+        .post('/reset')
         .send({
-          email: 'invalid@user.com',
-          password: 'iamnotcorrect',
+          email: 'missing@missing.com',
         })
         .expect(302)
         .end((error, res) => {
-          assert.strictEqual(logInfo.getCall(0).args[0], 'POST /login - No User Found                  - req.body.email: invalid@user.com');
+          assert.strictEqual(logInfo.getCall(0).args[0], 'POST /reset - User reset token sent                  - req.body.email: admin@admin.com');
           done(error);
         })
+    })
+  }),
+
+  describe('POST /new-password', () => {
+    it('should fail for invalid resetToken', done => {
+      const logInfo = this.sinon.spy(log, 'info');
+      request(app)
+      .post('/new-password')
+      .send({
+        resetToken: '123456789',
+        password: 'updatedpassword',
+      })
+      .expect(302)
+      .end((error, res) => {
+        assert.strictEqual(logInfo.getCall(0).args[0], 'POST /reset - Invalid Reset Token                  - req.body.resetToken: 123456789');
+        done(error);
+      })
     })
   })
 })
