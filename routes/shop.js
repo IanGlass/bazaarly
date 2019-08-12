@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.get('/', shopCont.getIndex);
 
-router.get('/products', shopCont.getProducts);
+router.get('/products/:productId', shopCont.getProduct);
 
 router.get('/cart', isAuth, shopCont.getCart);
 
@@ -21,7 +21,6 @@ router.get('/orders', isAuth, shopCont.getOrders);
 
 router.get('/invoice/:orderId', isAuth, shopCont.getInvoice);
 
-router.get('/products/:productId', shopCont.getProduct);
 
 // Export the router for app.js
 module.exports = router;

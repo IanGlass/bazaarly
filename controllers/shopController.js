@@ -40,39 +40,6 @@ exports.getIndex = (req, res, next) => {
 };
 
 /**
- * @description Renders a paginated view of all the products available
- * @path GET /products
- */
-exports.getProducts = (req, res, next) => {
-  Product
-    .find()
-    .countDocuments()
-    .then(numProducts => {
-      const currentPage = req.query.page || 1;
-      Product
-        .find()
-        .skip((currentPage - 1) * ITEMS_PER_AGE)
-        .limit(ITEMS_PER_AGE)
-        .then(products => {
-          res.render('shop/products', {
-            pageTitle: 'Shop',
-            prods: products,
-            pagination: {
-              numPages: Math.ceil(numProducts/ITEMS_PER_AGE),
-              hasNextPage: ITEMS_PER_AGE * currentPage < numProducts,
-              hasPreviousPage: currentPage > 1,
-              currentPage: parseInt(currentPage),
-            },
-          });
-        })
-    })
-    .catch(error => {
-      error.statusCode = 500;
-      return next(error);
-    })
-}
-
-/**
  * @description Shows a more detailed description of a particular product
  * @path GET /products/:productId
  */
