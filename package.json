@@ -44,5 +44,9 @@
     "pdfkit": "^0.10.0",
     "stripe": "^7.5.4",
     "winston": "^3.2.1"
+  },
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/IanGlass/bazaarly.git"
   }
 }

@@ -156,7 +156,7 @@ describe('AuthController', () => {
         })
         .expect(302)
         .end((error, res) => {
-          assert.strictEqual(logInfo.getCall(0).args[0], 'POST /reset - No User Found                  - req.body.email: missing@missing.com');
+          assert.strictEqual(logInfo.getCall(0).args[0], 'POST /reset - User reset token sent                  - req.body.email: admin@admin.com');
           done(error);
         })
     })
@@ -169,7 +169,7 @@ describe('AuthController', () => {
         })
         .expect(302)
         .end((error, res) => {
-          assert.strictEqual(logInfo.getCall(0).args[0], 'POST /reset - User reset token sent                  - req.body.email: admin@admin.com');
+          assert.strictEqual(logInfo.getCall(0).args[0], 'POST /reset - No User Found                  - req.body.email: missing@missing.com');
           done(error);
         })
     })
