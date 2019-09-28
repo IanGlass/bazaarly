@@ -2,4 +2,7 @@
 
 # bazaarly
 
+<p align="center">
 https://bazaarly.herokuapp.com/
+</p>
+
